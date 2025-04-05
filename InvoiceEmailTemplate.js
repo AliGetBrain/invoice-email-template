@@ -172,8 +172,8 @@ invoice = `<!DOCTYPE html>
         <table cellpadding="0" cellspacing="0" style="width: 100%; margin-top: 30px;">
             <tr>
                 <td style="width: 50%; vertical-align: top;">
-                    {{#if customMessage}} <div style="color: #6b7280; font-size: 0.95rem; text-align: left; max-width: 300px;">
-                        {{customMessage}}
+                    {{#if customInvoiceMessage}} <div style="color: #6b7280; font-size: 0.95rem; text-align: left; max-width: 300px;">
+                        {{customInvoiceMessage}}
                     </div> {{/if}}
                 </td>
             
