@@ -337,7 +337,7 @@ const data = {
   shippingAmount:10,
   previousPayments: 20,
   balanceDue: 165,
-  customInvoicMessage: "Thank you for your business and have a great day! ",
+  customInvoiceMessage: "Thank you for your business and have a great day! ",
   companyName: "Our Company",
   companyAddress: {
     streetAddress: "Super Fake Street 123",
