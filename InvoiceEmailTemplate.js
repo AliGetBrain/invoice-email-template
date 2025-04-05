@@ -301,9 +301,9 @@ const data = {
     state: "CA",
     zipCode: "12345"
   },
-  shipDate: "",
-  shipMethod: "",
-  trackingNumber: 0,
+  shipDate: "2025-4-15",
+  shipMethod: "Plane",
+  trackingNumber: 444,
   salesTerm: "Net 30",
   lineItems: [
     {
@@ -334,10 +334,10 @@ const data = {
   subTotal: 185,
   discounts: 10,
   totalAmount: 175,
-  shippingAmount:0,
+  shippingAmount:10,
   previousPayments: 20,
-  balanceDue: 155,
-  customInvoiceMessage: "Thank you for your business and have a great day! ",
+  balanceDue: 165,
+  customInvoicMessage: "Thank you for your business and have a great day! ",
   companyName: "Our Company",
   companyAddress: {
     streetAddress: "Super Fake Street 123",
