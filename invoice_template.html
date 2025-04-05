@@ -6,6 +6,28 @@
     <title>Invoice Template</title>
 </head>
 <body style="font-family: Arial, Helvetica, sans-serif; line-height: 1.6; color: #1f2937; max-width: 800px; margin: 0 auto; padding: 40px 20px; background-color: #f9fafb;">
+      
+    
+    <div style="margin-bottom: 40px; padding: 24px; background-color: white; border-radius: 8px; color: #4b5563; font-family: Arial, Helvetica, sans-serif;">
+    <!-- Message Section -->
+        <p style="margin: 0 0 16px 0; font-size: 1rem; font-weight: 500;">Hello ,</p>
+         
+        <p style="margin: 0 0 16px 0; font-size: 1rem; line-height: 1.6;">
+            I hope you're doing well! Please find attached <span style="font-weight: 600; color: #374151;">Invoice #</span> for your records. <br>
+            This invoice is due on <span style="font-weight: 600; color: #374151;"></span>. Let me know if you have any questions—we're happy to help.
+        </p>
+        
+        <p style="margin: 0 0 16px 0; font-size: 1rem; line-height: 1.6;">
+            Thank you for your business!
+        </p>
+    
+        <p style="margin: 0; font-size: 1rem;">
+            Best regards,<br>
+            <span style="font-weight: 500;"> - Billing Team</span>
+        </p>
+    </div>
+
+
 
 
 
@@ -15,27 +37,17 @@
         <!-- Company Info -->
         <div style="display: flex; justify-content: space-between; margin-bottom: 40px;">
             <div style="font-size: 0.95rem; color: #4b5563;">
-                <div style="font-weight: 600; color: #374151;">Sandbox Company_US_2</div>
-                <div>123 Sierra Way</div>
-                <div>San Pablo, CA 87999</div>
-                <div>noreply@quickbooks.com</div>
+                <div style="font-weight: 600; color: #374151;">Our Company</div>
+                <div>Super Fake Street 123</div>
+                <div>Fake City, TX 12345</div>
+                <div>fakemail@example.com</div>
             </div>
 
           <!-- SVG Container - Add this section -->
-          <div style="width: 200px; text-align: right;">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" fill="#6200EE" rx="10" ry="10"/>
-  <polyline points="20,80 40,40 60,60 80,30" fill="none" stroke="white" stroke-width="4"/>
-  <circle cx="20" cy="80" r="5" fill="white"/>
-  <circle cx="40" cy="40" r="5" fill="white"/>
-  <circle cx="60" cy="60" r="5" fill="white"/>
-  <circle cx="80" cy="30" r="5" fill="white"/>
-</svg>
-          </div>
         </div>
 
         <!-- Invoice Title -->
-        <div style="color: #6200EE; font-size: 40px; font-weight: 700; margin: 0 0 40px 0; letter-spacing: -0.5px; position: relative; display: inline-block; padding-bottom: 10px; border-bottom: 3px solid #6200EE;">
+        <div style="color: #0000FF; font-size: 40px; font-weight: 700; margin: 0 0 40px 0; letter-spacing: -0.5px; position: relative; display: inline-block; padding-bottom: 10px; border-bottom: 3px solid #0000FF;">
             INVOICE
         </div>
 
@@ -45,17 +57,10 @@
                 <td style="width: 33%; vertical-align: top;">
                     <div style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 12px; font-weight: 600;">BILL TO</div>
                     <div style="font-weight: 600; color: #374151;">John Melton</div>
-                      
-                    <div>85 Pine St.</div>
-                    <div>Menlo Park, CA 94304</div>
+                    
+                    <div>Fake Street 123</div>
+                    <div>Fake City, CA 12345</div>
                 </td>
-                  <td style="width: 33%; vertical-align: top;">
-                      <div style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 12px; font-weight: 600;">SHIP TO</div>
-                        <div style="font-weight: 600; color: #374151;">John Melton</div>
-                          
-                        <div>85 Pine St.</div>
-                        <div>Menlo Park, CA 94304</div>
-                  </td>
                 <td style="width: 33%; vertical-align: top; text-align: right;">
                     <div><span style="font-weight: 600; color: #374151;">INVOICE #</span> 1007</div>
                     <div><span style="font-weight: 600; color: #374151;">DATE</span> 12/23/2024</div>
@@ -74,8 +79,12 @@
                     <table cellpadding="0" cellspacing="0" style="width: 100%;">
                         <tr>
                               <td style="vertical-align: top;">
-                                  <div style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 12px; font-weight: 600;">Custom field 2</div>
-                                  <div style="color: #374151;">custom</div>
+                                  <div style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 12px; font-weight: 600;">Custom Field</div>
+                                  <div style="color: #374151;">this is a custom value</div>
+                              </td>
+                              <td style="vertical-align: top;">
+                                  <div style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 12px; font-weight: 600;">Custom Field 2</div>
+                                  <div style="color: #374151;">this is a custom value 2</div>
                               </td>
                         </tr>
                     </table>
@@ -86,59 +95,81 @@
 
 
         <!-- Invoice Table -->
-        <table cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: separate; margin: 20px 0;">
+          <table cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: separate; margin: 20px 0;">
             <thead>
-                <tr>
-                    <th style="background-color: #6200EE; padding: 12px 16px; text-align: left; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">PRODUCT/SERVICE</th>
-                    <th style="background-color: #6200EE; padding: 12px 16px; text-align: left; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">DESCRIPTION</th>
-                    <th style="background-color: #6200EE; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">QTY</th>
-                    <th style="background-color: #6200EE; padding: 12px 16px; text-align: right; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">RATE</th>
-                    <th style="background-color: #6200EE; padding: 12px 16px; text-align: right; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">AMOUNT</th>
-                </tr>
+              <tr>
+
+
+
+                <th style="background-color: #0000FF; padding: 12px 16px; text-align: left; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">PRODUCT/SERVICE</th>
+                <th style="background-color: #0000FF; padding: 12px 16px; text-align: left; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">DESCRIPTION</th>
+                <th style="background-color: #0000FF; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">QTY</th>
+                <th style="background-color: #0000FF; padding: 12px 16px; text-align: right; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">RATE</th>
+                <th style="background-color: #0000FF; padding: 12px 16px; text-align: right; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">AMOUNT</th>
+              </tr>
             </thead>
             <tbody>
-                  <tr>
-                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">Design</td>
-                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">Custom Design</td>
-                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center;">10</td>
-                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: right;">$75.00</td>
-                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: right;"> <div>$750.00</div>
-                    </td>
-                  </tr>
-
-
+                    <tr>
+                      
+                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">Item 3</td>
+                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">Some Description Here</td>
+                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center;">1</td>
+                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: right;">$50</td>
+                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: right;">$50</td>
+                    </tr>
+                    <tr>
+                      
+                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">Item 2</td>
+                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">Some Description Here</td>
+                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center;">1</td>
+                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: right;">$35</td>
+                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: right;">$35</td>
+                    </tr>
+                    <tr>
+                      
+                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">Item 3</td>
+                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">Some Description Here</td>
+                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center;">2</td>
+                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: right;">$50</td>
+                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: right;">$100</td>
+                    </tr>
             </tbody>
-        </table>
+          </table>
 
         <!-- Totals Section -->
         <table cellpadding="0" cellspacing="0" style="width: 100%; margin-top: 30px;">
             <tr>
                 <td style="width: 50%; vertical-align: top;">
-                     <div style="color: #6b7280; font-size: 0.95rem; text-align: left; max-width: 300px;">
-                        Thank you for your business and have a great day! 
-                    </div> 
+                    
                 </td>
             
                 <td style="width: 50%; vertical-align: top;">
                     <table cellpadding="0" cellspacing="0" style="width: 100%; margin-left: auto;">
-                                                
-                          <tr>
-                              <td style="padding: 8px 0; font-size: 0.95rem;">TOTAL</td>
-                              <td style="padding: 8px 0; font-size: 0.95rem; text-align: right;">$750.00</td>
-                          </tr>    
-                          <tr>
-                              <td style="padding: 8px 0; font-size: 0.95rem;">PAYMENTS</td>
-                              <td style="padding: 8px 0; font-size: 0.95rem; text-align: right;">- $300.00</td>
-                          </tr> 
-                          <tr>
-                              <td style="padding: 8px 0; font-size: 0.95rem;">DEPOSIT</td>
-                              <td style="padding: 8px 0; font-size: 0.95rem; text-align: right;">- $10.00</td>
-                          </tr> 
+                            <tr>
+                                <td style="padding: 8px 0; font-size: 0.95rem;">SUBTOTAL</td>
+                                <td style="padding: 8px 0; font-size: 0.95rem; text-align: right;">$185.00</td>
+                            </tr>
+
                         <tr>
-                            <td colspan="2" style="padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 1.25rem; font-weight: 700; color: #6200EE; text-align: right;">
-                                BALANCE DUE $450.00
-                            </td>
+                            <td style="padding: 8px 0; font-size: 0.95rem;">DISCOUNTS </td>
+                            <td style="padding: 8px 0; font-size: 0.95rem; text-align: right;">- $10.00</td>
                         </tr>
+                                                
+                  
+                        <tr>
+                            <td style="padding: 8px 0; font-size: 0.95rem;">TOTAL</td>
+                            <td style="padding: 8px 0; font-size: 0.95rem; text-align: right;">$175.00</td>
+                        </tr>    
+                        <tr>
+                            <td style="padding: 8px 0; font-size: 0.95rem;">PAYMENTS</td>
+                            <td style="padding: 8px 0; font-size: 0.95rem; text-align: right;">- $20.00</td>
+                        </tr> 
+                      <tr>
+                          <td colspan="2" style="padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 1.25rem; font-weight: 700; color: #0000FF; text-align: right;">
+                              BALANCE DUE $155.00
+                          </td>
+                      </tr>
+                      <!-- need to add a conditon for this -->
                          <tr>
                             <td colspan="2" style="padding-top: 10px; font-size: 1.25rem; font-weight: 700; color: #FF0000; text-align: right;">
                                 OVERDUE 12/23/2024
@@ -152,16 +183,16 @@
         <!-- Buttons -->
         <!-- Click Here To Pay Button and PDF Download Button -->
         <div style="margin:0; padding:0;">
-          <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border-collapse: collapse;">
+          <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse;">
             <tr>
               <td height="60" style="line-height: 60px; font-size: 60px;">&nbsp;</td>
             </tr>
           </table>
-          <table align="center" border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+          <table style="border-collapse: collapse; margin: 0 auto;">
             <tr>
               <!-- Pay Button -->
-              <td align="right" style="padding: 0 8px;">
-                <a href="localhost:5678" target="_blank" style="background-color: #6200EE; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 30px; font-weight: 600; font-family: Arial, sans-serif; font-size: 14px; display: inline-block;">
+              <td style="padding: 0 8px; text-align: right;">
+                <a href="localhost:5678" target="_blank" style="background-color: #0000FF; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 30px; font-weight: 600; font-family: Arial, sans-serif; font-size: 14px; display: inline-block;">
                   Click Here To Pay
                 </a>
               </td>
@@ -169,8 +200,8 @@
                 OR
               </td>
               <!-- PDF Button -->
-              <td align="left" style="padding: 0 8px;">
-                <a href="http://localhost:5678/webhook-test/pdf-download?invoiceid=16&companyid=9341454074596632&customerid=13" target="_blank" style="background-color: #6200EE; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 30px; font-weight: 600; font-family: Arial, sans-serif; font-size: 14px; display: inline-block;">
+              <td style="padding: 0 8px; text-align: left;">
+                <a href="http://localhost:5678" target="_blank" style="background-color: #0000FF; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 30px; font-weight: 600; font-family: Arial, sans-serif; font-size: 14px; display: inline-block;">
                   Download PDF
                 </a>
               </td>

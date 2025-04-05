@@ -38,39 +38,11 @@ const registerHelpers = () => {
     return a > b;
   });
 
-  Handlebars.registerHelper("sumTaxPercent", function (taxLines) {
-    return taxLines.reduce((sum, line) => {
-      return sum + line.TaxLineDetail.TaxPercent;
-    }, 0);
-  });
-
   Handlebars.registerHelper("startsWith", function (str, prefix) {
     if (typeof str !== "string") return false;
     return str.startsWith(prefix);
   });
 
-  Handlebars.registerHelper("sumBundleRates", function (groupLineDetail) {
-    if (!groupLineDetail || !groupLineDetail.Line) return 0;
-
-    return groupLineDetail.Line.reduce((sum, line) => {
-      return sum + (line.Amount || 0);
-    }, 0);
-  });
-
-  Handlebars.registerHelper("hasServiceDates", function (lineItems) {
-    return lineItems.some((item) => {
-      if (
-        item.DetailType === "GroupLineDetail" &&
-        item.GroupLineDetail.ServiceDate
-      ) {
-        return true;
-      }
-      if (item.DetailType === "SalesItemLineDetail" && item.ServiceDate) {
-        return true;
-      }
-      return false;
-    });
-  });
 
   Handlebars.registerHelper("formatDate", function (date) {
     if (!date) return "";
