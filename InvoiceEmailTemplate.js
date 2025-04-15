@@ -1,9 +1,17 @@
 const { registerHelpers } = require("./HandleBarHelpers");
-const {initialMessage, fiveDaysBeforeMessage, threeDaysBeforeMessage, dueDayMessage, recentlyOverdueMessage} = require("./OutReachMessages")
+const {
+  initialMessage,
+  fiveDaysBeforeMessage,
+  threeDaysBeforeMessage,
+  dueDayMessage,
+  recentlyOverdueMessage,
+} = require("./OutReachMessages");
 const Handlebars = require("handlebars");
 const fs = require("fs");
+const path = require("path");
+const chokidar = require("chokidar");
 
-// activate all helper functions 
+// activate all helper functions
 registerHelpers();
 
 invoice = `<!DOCTYPE html>
@@ -38,16 +46,16 @@ invoice = `<!DOCTYPE html>
         <!-- Company Info -->
         <div style="display: flex; justify-content: space-between; margin-bottom: 40px;">
             <div style="font-size: 0.95rem; color: #4b5563;">
-                {{#if companyName}}<div style="font-weight: 600; color: #374151;">{{companyName}}</div>{{/if}}
-                {{#if companyAddress.streetAddress}}<div>{{companyAddress.streetAddress}}</div>{{/if}}
-                {{#if (and companyAddress.city companyAddress.state)}}<div>{{companyAddress.city}}, {{companyAddress.state}} {{#if companyAddress.zipCode}}{{companyAddress.zipCode}}{{/if}}</div>{{/if}}
-                {{#if companyEmailAddress}}<div>{{companyEmailAddress}}</div>{{/if}}
+                {{#if ourCompanyName}}<div style="font-weight: 600; color: #374151;">{{ourCompanyName}}</div>{{/if}}
+                {{#if ourCompanyAddr.streetAddress}}<div>{{ourCompanyAddr.streetAddress}}</div>{{/if}}
+                {{#if (and ourCompanyAddr.city ourCompanyAddr.state)}}<div>{{ourCompanyAddr.city}}, {{ourCompanyAddr.state}} {{#if ourCompanyAddr.zipCode}}{{ourCompanyAddr.zipCode}}{{/if}}</div>{{/if}}
+                {{#if ourCompanyEmail}}<div>{{ourCompanyEmail}}</div>{{/if}}
             </div>
 
           <!-- SVG Container - Add this section -->
-         {{#if companyLogo}}
+         {{#if ourCompanyLogo}}
           <div style="width: 200px; text-align: right;">
-              {{{companyLogo}}}
+              {{{ourCompanyLogo}}}
           </div>
           {{/if}}
         </div>
@@ -63,7 +71,7 @@ invoice = `<!DOCTYPE html>
                 <td style="width: 33%; vertical-align: top;">
                     <div style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 12px; font-weight: 600;">BILL TO</div>
                     {{#if contactName}}<div style="font-weight: 600; color: #374151;">{{contactName}}</div>{{/if}}
-                    {{#if contactCompnayName}} {{#if (notEquals contactCompnayName contactName)}}<div>{{contactCompnayName}}</div>{{/if}} {{/if}}
+                    {{#if contactCompanyName}} {{#if (notEquals contactCompanyName contactName)}}<div>{{contactCompanyName}}</div>{{/if}} {{/if}}
                     {{#if contactBillAddr.streetAddress}}<div>{{contactBillAddr.streetAddress}}</div>{{/if}}
                     {{#if (and contactBillAddr.city contactBillAddr.state)}}<div>{{contactBillAddr.city}}, {{contactBillAddr.state}} {{#if contactBillAddr.zipCode}}{{contactBillAddr.zipCode}}{{/if}}</div>{{/if}}
                 </td>
@@ -79,6 +87,7 @@ invoice = `<!DOCTYPE html>
                   </td>
                 {{/if}}
                 <td style="width: 33%; vertical-align: top; text-align: right;">
+                    {{#if customerNumber}}<div><span style="font-weight: 600; color: #374151;">CUSTOMER #</span> {{customerNumber}}</div>{{/if}}
                     {{#if invoiceNumber}}<div><span style="font-weight: 600; color: #374151;">INVOICE #</span> {{invoiceNumber}}</div>{{/if}}
                     {{#if transactionDate}}<div><span style="font-weight: 600; color: #374151;">DATE</span> {{formatDate transactionDate}}</div>{{/if}}
                     {{#if dueDate}}<div><span style="font-weight: 600; color: #374151;">DUE DATE</span> {{formatDate dueDate}}</div>{{/if}}
@@ -159,7 +168,7 @@ invoice = `<!DOCTYPE html>
                       {{#if serviceDate}} <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">{{formatDate serviceDate}}</td> {{/if}}
                       <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">{{service}}</td>
                       <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">{{description}}</td>
-                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center;">{{qty}}</td>
+                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center;">{{quantity}}</td>
                       <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: right;">{{format rate}}</td>
                       <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: right;">{{format amount}}</td>
                     </tr>
@@ -172,9 +181,14 @@ invoice = `<!DOCTYPE html>
         <table cellpadding="0" cellspacing="0" style="width: 100%; margin-top: 30px;">
             <tr>
                 <td style="width: 50%; vertical-align: top;">
-                    {{#if customInvoiceMessage}} <div style="color: #6b7280; font-size: 0.95rem; text-align: left; max-width: 300px;">
-                        {{customInvoiceMessage}}
+                    {{#if customMessage}} <div style="color: #6b7280; font-size: 0.95rem; text-align: left; max-width: 300px; margin-bottom: 50px">
+                        {{customMessage}}
                     </div> {{/if}}
+                    {{#if fixedCompanyMessage}}
+                    <div style="border: 2px solid {{primaryColor}}; border-radius: 8px; padding: 20px; color: #4b5563; font-size: 0.85rem; text-align: left; max-width: 300px; line-height: 1.8;">
+                      {{{fixedCompanyMessage}}}
+                    </div>
+                    {{/if}}
                 </td>
             
                 <td style="width: 50%; vertical-align: top;">
@@ -213,10 +227,10 @@ invoice = `<!DOCTYPE html>
                             <td style="padding: 8px 0; font-size: 0.95rem; text-align: right;">{{format totalAmount}}</td>
                         </tr>    
                       {{/if}}  
-                      {{#if previousPayments}}      
+                      {{#if amountPaid}}      
                         <tr>
                             <td style="padding: 8px 0; font-size: 0.95rem;">PAYMENTS</td>
-                            <td style="padding: 8px 0; font-size: 0.95rem; text-align: right;">- {{format previousPayments}}</td>
+                            <td style="padding: 8px 0; font-size: 0.95rem; text-align: right;">- {{format amountPaid}}</td>
                         </tr> 
                       {{/if}}  
                        {{#if balanceDue}}   
@@ -226,7 +240,7 @@ invoice = `<!DOCTYPE html>
                           </td>
                       </tr>
                       {{/if}}
-                      <!-- need to add a conditon for this -->
+                      <!-- need to add a condition for this -->
                          <tr>
                             <td colspan="2" style="padding-top: 10px; font-size: 1.25rem; font-weight: 700; color: #FF0000; text-align: right;">
                                 OVERDUE {{formatDate transactionDate}}
@@ -259,7 +273,7 @@ invoice = `<!DOCTYPE html>
               </td>
               <!-- PDF Button -->
               <td style="padding: 0 8px; text-align: left;">
-                <a href="http://localhost:5678" target="_blank" style="background-color: {{primaryColor}}; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 30px; font-weight: 600; font-family: Arial, sans-serif; font-size: 14px; display: inline-block;">
+                <a href="{{pdfButtonLink}}" target="_blank" style="background-color: {{primaryColor}}; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 30px; font-weight: 600; font-family: Arial, sans-serif; font-size: 14px; display: inline-block;">
                   Download PDF
                 </a>
               </td>
@@ -270,7 +284,7 @@ invoice = `<!DOCTYPE html>
         <!-- Just PDF Download Button -->
           {{#if pdfButton}}
           <div style="text-align: center; margin-top: 40px; padding-top: 20px;">
-              <a href="http://localhost:5678" target="_blank" style="display: inline-block; background-color: {{primaryColor}}; color: white; padding: 12px 24px; text-decoration: none; border-radius: 30px; font-weight: 600;">
+              <a href="{{pdfButtonLink}}" target="_blank" style="display: inline-block; background-color: {{primaryColor}}; color: white; padding: 12px 24px; text-decoration: none; border-radius: 30px; font-weight: 600;">
                   Download PDF
               </a>
           </div>
@@ -279,13 +293,13 @@ invoice = `<!DOCTYPE html>
     </div>
 </body>
 </html>`;
- 
 
 const data = {
-  outReachMessage: 'initialMessage',
+  outReachMessage: "initialMessage",
   invoiceNumber: 1007,
   transactionDate: "2024-12-24",
   dueDate: "2025-01-23",
+  customerNumber: "",
   contactCompanyName: "John Melton",
   contactName: "John Melton",
   contactEmail: "John@Melton.com",
@@ -293,13 +307,13 @@ const data = {
     streetAddress: "Fake Street 123",
     city: "Fake City",
     state: "CA",
-    zipCode: "12345"
+    zipCode: "12345",
   },
   customerShipAddr: {
     streetAddress: "Fake Street 123",
     city: "Fake City",
     state: "CA",
-    zipCode: "12345"
+    zipCode: "12345",
   },
   shipDate: "2025-4-15",
   shipMethod: "Plane",
@@ -309,74 +323,102 @@ const data = {
     {
       service: "Item 3",
       serviceDate: "",
-      description: "Some Description Here" ,
+      description: "Some Description Here",
       qty: "1",
       rate: "50",
-      amount: "50" 
+      amount: "50",
     },
     {
       service: "Item 2",
       serviceDate: "",
-      description: "Some Description Here" ,
+      description: "Some Description Here",
       qty: "1",
       rate: "35",
-      amount: "35"
+      amount: "35",
     },
     {
       service: "Item 3",
       serviceDate: "",
-      description: "Some Description Here" ,
+      description: "Some Description Here",
       qty: "2",
       rate: "50",
-      amount: "100",
+      amount: "10",
     },
   ],
   subTotal: 185,
   discounts: 10,
   totalAmount: 175,
-  shippingAmount:10,
-  previousPayments: 20,
+  shippingAmount: 10,
+  amountPaid: 20,
   balanceDue: 165,
-  customInvoiceMessage: "Thank you for your business and have a great day! ",
-  companyName: "Our Company",
-  companyAddress: {
+  customMessage: "Thank you for your business and have a great day! ",
+  ourCompanyName: "Our Company",
+  ourCompanyAddr: {
     streetAddress: "Super Fake Street 123",
     city: "Fake City",
     state: "TX",
-    zipCode: "12345"
+    zipCode: "12345",
   },
-  companyEmailAddress: "fakemail@example.com",
+  ourCompanyEmail: "fakemail@example.com",
   customFields: [
     {
       fieldName: "Custom Field",
-      value: "this is a custom value"
+      value: "this is a custom value",
     },
     {
       fieldName: "Custom Field 2",
-      value: "this is a custom value 2"
+      value: "this is a custom value 3",
     },
   ],
-  invoicePaymentLink: 'localhost:5678',
+  fixedCompanyMessage:
+    '<div style="font-weight: 600; margin-bottom: 12px; font-size: 0.875rem;">ACH DELIVERY INSTRUCTIONS:</div><div>Beneficiary Bank: JP Morgan Chase</div><div>ABA Routing Number: 267084131</div><div>Account Name: INSPYR Solutions, LLC</div><div>Account Number: 909331909</div><div>Remittance: cashposting@INSPYRSolutions.com</div><div style="margin-top: 12px; font-style: italic;">Please include your invoice number with your payment.</div>',
+  invoicePaymentLink: "localhost:5678",
   pdfButton: true,
-  companyLogo: "",
-  primaryColor: '#0000FF',
+  pdfButtonLink: "",
+  ourCompanyLogo: "",
+  primaryColor: "#0000FF",
 };
-
 
 const template = Handlebars.compile(invoice);
 
 function generateAndSaveHTML() {
-  const html = template(data);
-  fs.writeFileSync("invoice_template.html", html);
-  console.log("HTML updated");
+  try {
+    console.log("Generating HTML...");
+    const html = template(data);
+
+    const outputFile = path.join(__dirname, "invoice_template.html");
+    fs.writeFileSync(outputFile, html);
+    console.log(`HTML generated successfully at: ${outputFile}`);
+  } catch (error) {
+    console.error("Error generating HTML:", error);
+  }
 }
 
-// Watch for changes
-fs.watch("./", (eventType, filename) => {
-  if (filename.endsWith(".js") || filename.endsWith(".hbs")) {
-    generateAndSaveHTML();
-  }
+// Initialize chokidar watcher (much more reliable than fs.watch)
+console.log("Setting up file watcher with chokidar...");
+
+// Watch JS and HBS files
+const watcher = chokidar.watch(["./**/*.js", "./**/*.hbs"], {
+  ignored: /(node_modules|\.git)/,
+  persistent: true,
+  ignoreInitial: true,
+  awaitWriteFinish: {
+    stabilityThreshold: 300,
+    pollInterval: 100,
+  },
 });
 
+// Add event listeners
+watcher
+  .on("change", (path) => {
+    console.log(`File ${path} has changed, regenerating HTML...`);
+    generateAndSaveHTML();
+  })
+  .on("error", (error) => console.error(`Watcher error: ${error}`))
+  .on("ready", () =>
+    console.log("Initial scan complete. Ready for changes...")
+  );
+
 // Initial generation
-// generateAndSaveHTML();
+console.log("Performing initial HTML generation...");
+generateAndSaveHTML();
