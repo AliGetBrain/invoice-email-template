@@ -25,7 +25,7 @@ const initialMessage = `
     ${signOff}
 `;
 
-const fiveDaysBeforeMessage = `
+const fiveDaysOutMessage = `
     ${greeting}
     <p style="margin: 0 0 16px 0; font-size: 1rem; line-height: 1.6;">
         Just a friendly reminder that <span style="font-weight: 600; color: #374151;">Invoice #{{invoiceNumber}}</span> is due soon on <span style="font-weight: 600; color: #374151;">{{formatDate dueDate}}</span>. <br>
@@ -38,7 +38,7 @@ const fiveDaysBeforeMessage = `
     ${signOff}
 `;
 
-const threeDaysBeforeMessage = `
+const threeDaysOutMessage = `
     ${greeting}
     <p style="margin: 0 0 16px 0; font-size: 1rem; line-height: 1.6;">
         We wanted to follow up as <span style="font-weight: 600; color: #374151;">Invoice #{{invoiceNumber}}</span> is due in just a few business days on <span style="font-weight: 600; color: #374151;">{{formatDate dueDate}}</span>.
@@ -91,8 +91,8 @@ const recentlyOverdueMessage = `
 
 module.exports = {
   initialMessage,
-  fiveDaysBeforeMessage,
-  threeDaysBeforeMessage,
+  fiveDaysOutMessage,
+  threeDaysOutMessage,
   dueDayMessage,
   recentlyOverdueMessage,
 };

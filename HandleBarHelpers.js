@@ -43,10 +43,13 @@ const registerHelpers = () => {
     return str.startsWith(prefix);
   });
 
-
   Handlebars.registerHelper("formatDate", function (date) {
     if (!date) return "";
     return new Date(date).toLocaleDateString();
+  });
+
+  Handlebars.registerHelper("hasServiceDate", function (lineItems) {
+    return lineItems.some((item) => item.serviceDate);
   });
 };
 
