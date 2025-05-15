@@ -1,7 +1,7 @@
 const Handlebars = require("handlebars");
 
 const registerHelpers = () => {
-  Handlebars.registerHelper("format", function (value) {
+  Handlebars.registerHelper("formatValue", function (value) {
     if (typeof value === "number") {
       const isNegative = value < 0;
       const absValue = Math.abs(value);
@@ -43,10 +43,19 @@ const registerHelpers = () => {
     return str.startsWith(prefix);
   });
 
-
   Handlebars.registerHelper("formatDate", function (date) {
     if (!date) return "";
     return new Date(date).toLocaleDateString();
+  });
+
+  Handlebars.registerHelper("hasServiceDate", function (lineItems) {
+    return lineItems.some((item) => item.serviceDate);
+  });
+
+  Handlebars.registerHelper("checkOverDue", function (dueDate) {
+    const dueDateObj = new Date(dueDate);
+    const now = new Date();
+    return now > dueDateObj;
   });
 };
 

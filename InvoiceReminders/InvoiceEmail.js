@@ -1,20 +1,26 @@
-const { registerHelpers } = require("./HandleBarHelpers");
+const { registerHelpers } = require("../HandleBarHelpers");
 const {
   initialMessage,
-  fiveDaysBeforeMessage,
-  threeDaysBeforeMessage,
+  fiveDaysOutMessage,
+  threeDaysOutMessage,
   dueDayMessage,
   recentlyOverdueMessage,
-} = require("./OutReachMessages");
+} = require("./extras/OutReachMessages");
+const {
+  insyprNewClient,
+  inspyrExistingClient,
+  inspyrOverDue,
+  inspyrWeeklyOverDue,
+} = require("./extras/InspyrOutReachMessages");
 const Handlebars = require("handlebars");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const chokidar = require("chokidar");
 
 // activate all helper functions
 registerHelpers();
 
-invoice = `<!DOCTYPE html>
+const emailMessage = `<!DOCTYPE html>
 <html lang="en">
 <head> 
     <meta charset="UTF-8">
@@ -27,11 +33,11 @@ invoice = `<!DOCTYPE html>
     {{/if}}
 
     {{#if (equals outReachMessage 'fiveDaysBeforeMessage') }}
-      ${fiveDaysBeforeMessage}
+      ${fiveDaysOutMessage}
     {{/if}}
 
     {{#if (equals outReachMessage 'threeDaysBeforeMessage') }}
-      ${threeDaysBeforeMessage}
+      ${threeDaysOutMessage}
     {{/if}}
 
     {{#if (equals outReachMessage 'dueDayMessage') }}
@@ -42,10 +48,28 @@ invoice = `<!DOCTYPE html>
       ${recentlyOverdueMessage}
     {{/if}}
 
+     {{#if (equals outReachMessage 'insyprNewClient') }}
+      ${insyprNewClient}
+    {{/if}}
+
+     {{#if (equals outReachMessage 'inspyrExistingClient') }}
+      ${inspyrExistingClient}
+    {{/if}}
+
+     {{#if (equals outReachMessage 'inspyrOverDue') }}
+      ${inspyrOverDue}
+    {{/if}}
+
+     {{#if (equals outReachMessage 'inspyrWeeklyOverDue') }}
+      ${inspyrWeeklyOverDue}
+    {{/if}}
+
+    <body style="font-family: Arial, Helvetica, sans-serif; line-height: 1.6; color: #1f2937; max-width: 800px; margin: 0 auto; padding: 40px 20px; background-color: #f9fafb;">
     <div style="background: white; border-radius: 12px; padding: 40px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); position: relative; overflow: hidden;">
-        <!-- Company Info -->
+       <!-- Company Info -->
         <div style="display: flex; justify-content: space-between; margin-bottom: 40px;">
-            <div style="font-size: 0.95rem; color: #4b5563;">
+            <div>
+                <div style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 12px; font-weight: 600;">REMIT TO</div>
                 {{#if ourCompanyName}}<div style="font-weight: 600; color: #374151;">{{ourCompanyName}}</div>{{/if}}
                 {{#if ourCompanyAddr.streetAddress}}<div>{{ourCompanyAddr.streetAddress}}</div>{{/if}}
                 {{#if (and ourCompanyAddr.city ourCompanyAddr.state)}}<div>{{ourCompanyAddr.city}}, {{ourCompanyAddr.state}} {{#if ourCompanyAddr.zipCode}}{{ourCompanyAddr.zipCode}}{{/if}}</div>{{/if}}
@@ -97,7 +121,7 @@ invoice = `<!DOCTYPE html>
         </table>
 
         <!-- Shipping Fields -->
-        {{#if (tripleOr shipDate shipMethod trackingNumber)}}
+        {{#if (tripleOr shippingInfo.shipDate shippingInfo.shipMethod shippingInfo.trackingNumber)}}
         <table cellpadding="0" cellspacing="0" style="width: 100%; margin-bottom: 40px;">
             <tr>
                 <td style="border-top: 1px solid #E5E7EB; padding-top: 16px;">
@@ -105,15 +129,15 @@ invoice = `<!DOCTYPE html>
                         <tr>
                           <td style="vertical-align: top;">
                               <div style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 12px; font-weight: 600;">SHIP DATE</div>
-                              {{#if shipDate }}<div style="color: #374151;">{{formatDate shipDate}}</div> {{else}} N/A {{/if}}
+                              {{#if shippingInfo.shipDate }}<div style="color: #374151;">{{formatDate shippingInfo.shipDate}}</div> {{else}} N/A {{/if}}
                           </td>
                             <td style="vertical-align: top;">
                               <div style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 12px; font-weight: 600;">SHIP VIA</div>
-                               {{#if shipMethod }} <div style="color: #374151;">{{shipMethod}}</div> {{else}} N/A  {{/if}}
+                               {{#if shippingInfo.shipMethod }} <div style="color: #374151;">{{shippingInfo.shipMethod}}</div> {{else}} N/A  {{/if}}
                           </td>
                           <td style="vertical-align: top;">
                               <div style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 12px; font-weight: 600;">TRACKING NO.</div>
-                               {{#if trackingNumber }} <div style="color: #374151;">{{trackingNumber}}</div> {{else}} N/A  {{/if}}
+                               {{#if shippingInfo.trackingNumber }} <div style="color: #374151;">{{shippingInfo.trackingNumber}}</div> {{else}} N/A  {{/if}}
                           </td>
                         </tr>
                     </table>
@@ -148,33 +172,55 @@ invoice = `<!DOCTYPE html>
 
         <!-- Invoice Table -->
         {{#if lineItems}}
-          <table cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: separate; margin: 20px 0;">
-            <thead>
-              <tr>
+          {{#if (hasServiceDate lineItems)}}
+            <table cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: separate; margin: 20px 0;">
+              <thead>
+                <tr>
+                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">DATE</th>
+                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">PRODUCT/SERVICE</th>
+                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">DESCRIPTION</th>
+                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">QTY</th>
+                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">RATE</th>
+                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">AMOUNT</th>
+                </tr>
+              </thead>
+              <tbody>
                 {{#each lineItems}}
-                {{#if serviceDate}}
-                <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: left; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">DATE</th>{{/if}}
+                  <tr>
+                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">{{#if serviceDate}}{{formatDate serviceDate}}{{else}}&nbsp;{{/if}}</td>
+                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">{{service}}</td>
+                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">{{description}}</td>
+                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center;">{{quantity}}</td>
+                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center;">{{formatValue rate}}</td>
+                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center;">{{formatValue amount}}</td>
+                  </tr>
                 {{/each}}
-                <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: left; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">PRODUCT/SERVICE</th>
-                <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: left; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">DESCRIPTION</th>
-                <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">QTY</th>
-                <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: right; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">RATE</th>
-                <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: right; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">AMOUNT</th>
-              </tr>
-            </thead>
-            <tbody>
-              {{#each lineItems}}
-                    <tr>
-                      {{#if serviceDate}} <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">{{formatDate serviceDate}}</td> {{/if}}
-                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">{{service}}</td>
-                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">{{description}}</td>
-                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center;">{{quantity}}</td>
-                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: right;">{{format rate}}</td>
-                      <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: right;">{{format amount}}</td>
-                    </tr>
-              {{/each}}
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          {{else}}
+            <table cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: separate; margin: 20px 0;">
+              <thead>
+                <tr>
+                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">PRODUCT/SERVICE</th>
+                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">DESCRIPTION</th>
+                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">QTY</th>
+                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">RATE</th>
+                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">AMOUNT</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each lineItems}}
+                  <tr>
+                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">{{service}}</td>
+                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">{{description}}</td>
+                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center;">{{quantity}}</td>
+                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center;">{{formatValue rate}}</td>
+                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center;">{{formatValue amount}}</td>
+                  </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          {{/if}}
         {{/if}}
 
         <!-- Totals Section -->
@@ -197,7 +243,7 @@ invoice = `<!DOCTYPE html>
                           {{#if subTotal}}
                             <tr>
                                 <td style="padding: 8px 0; font-size: 0.95rem;">SUBTOTAL</td>
-                                <td style="padding: 8px 0; font-size: 0.95rem; text-align: right;">{{format subTotal}}</td>
+                                <td style="padding: 8px 20px 8px 0; font-size: 0.95rem; text-align: right;">{{formatValue subTotal}}</td>
                             </tr>
                           {{/if}}
                       {{/if}}
@@ -205,47 +251,48 @@ invoice = `<!DOCTYPE html>
                       {{#if discounts}}
                         <tr>
                             <td style="padding: 8px 0; font-size: 0.95rem;">DISCOUNTS </td>
-                            <td style="padding: 8px 0; font-size: 0.95rem; text-align: right;">- {{format discounts}}</td>
+                            <td style="padding: 8px 20px 8px 0; font-size: 0.95rem; text-align: right;">- {{formatValue discounts}}</td>
                         </tr>
                       {{/if}}
                         {{#if totalTax}}<tr>
                             <td style="padding: 8px 0; font-size: 0.95rem;">TAX </td>
-                            <td style="padding: 8px 0; font-size: 0.95rem; text-align: right;">{{format totalTax}}</td>
+                            <td style="padding: 8px 20px 8px 0; font-size: 0.95rem; text-align: right;">{{formatValue totalTax}}</td>
                         </tr>
                       {{/if}}
                         
                       {{#if shippingAmount}}
                         <tr>
                             <td style="padding: 8px 0; font-size: 0.95rem;">SHIPPING</td>
-                            <td style="padding: 8px 0; font-size: 0.95rem; text-align: right;">{{format shippingAmount}}</td>
+                            <td style="padding: 8px 20px 8px 0; font-size: 0.95rem; text-align: right;">{{formatValue shippingAmount}}</td>
                         </tr>
                       {{/if}}
                   
                       {{#if totalAmount}}
                         <tr>
                             <td style="padding: 8px 0; font-size: 0.95rem;">TOTAL</td>
-                            <td style="padding: 8px 0; font-size: 0.95rem; text-align: right;">{{format totalAmount}}</td>
+                            <td style="padding: 8px 20px 8px 0; font-size: 0.95rem; text-align: right;">{{formatValue totalAmount}}</td>
                         </tr>    
                       {{/if}}  
                       {{#if amountPaid}}      
                         <tr>
                             <td style="padding: 8px 0; font-size: 0.95rem;">PAYMENTS</td>
-                            <td style="padding: 8px 0; font-size: 0.95rem; text-align: right;">- {{format amountPaid}}</td>
+                            <td style="padding: 8px 20px 8px 0; font-size: 0.95rem; text-align: right;">- {{formatValue amountPaid}}</td>
                         </tr> 
                       {{/if}}  
                        {{#if balanceDue}}   
                       <tr>
-                          <td colspan="2" style="padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 1.25rem; font-weight: 700; color: {{primaryColor}}; text-align: right;">
-                              BALANCE DUE {{format balanceDue}}
+                          <td colspan="2" style="padding: 20px 20px 0px 0; border-top: 1px solid #e5e7eb; font-size: 1.25rem; font-weight: 700; color: {{primaryColor}}; text-align: right;">
+                              BALANCE DUE {{formatValue balanceDue}}
                           </td>
                       </tr>
                       {{/if}}
-                      <!-- need to add a condition for this -->
+                      {{#if (checkOverDue dueDate) }}
                          <tr>
-                            <td colspan="2" style="padding-top: 10px; font-size: 1.25rem; font-weight: 700; color: #FF0000; text-align: right;">
-                                OVERDUE {{formatDate transactionDate}}
+                            <td colspan="2" style="padding: 20px 20px 0px 0; font-size: 1.25rem; font-weight: 700; color: #e74c3c; text-align: right;">
+                                OVERDUE {{formatDate dueDate}}
                             </td>
                         </tr>
+                      {{/if}}
                     </table> 
                 </td>
             </tr>
@@ -295,7 +342,7 @@ invoice = `<!DOCTYPE html>
 </html>`;
 
 const data = {
-  outReachMessage: "initialMessage",
+  outReachMessage: "inspyrWeeklyOverDue",
   invoiceNumber: 1007,
   transactionDate: "2024-12-24",
   dueDate: "2025-01-23",
@@ -315,16 +362,18 @@ const data = {
     state: "CA",
     zipCode: "12345",
   },
-  shipDate: "2025-4-15",
-  shipMethod: "Plane",
-  trackingNumber: 444,
+  shippingInfo: {
+    shipDate: "",
+    shipMethod: "",
+    trackingNumber: 0,
+  },
   salesTerm: "Net 30",
   lineItems: [
     {
       service: "Item 3",
       serviceDate: "",
       description: "Some Description Here",
-      qty: "1",
+      quantity: "1",
       rate: "50",
       amount: "50",
     },
@@ -332,7 +381,7 @@ const data = {
       service: "Item 2",
       serviceDate: "",
       description: "Some Description Here",
-      qty: "1",
+      quantity: "1",
       rate: "35",
       amount: "35",
     },
@@ -340,7 +389,7 @@ const data = {
       service: "Item 3",
       serviceDate: "",
       description: "Some Description Here",
-      qty: "2",
+      quantity: "2",
       rate: "50",
       amount: "10",
     },
@@ -348,7 +397,7 @@ const data = {
   subTotal: 185,
   discounts: 10,
   totalAmount: 175,
-  shippingAmount: 10,
+  shippingAmount: 0,
   amountPaid: 20,
   balanceDue: 165,
   customMessage: "Thank you for your business and have a great day! ",
@@ -360,33 +409,36 @@ const data = {
     zipCode: "12345",
   },
   ourCompanyEmail: "fakemail@example.com",
-  customFields: [
-    {
-      fieldName: "Custom Field",
-      value: "this is a custom value",
-    },
-    {
-      fieldName: "Custom Field 2",
-      value: "this is a custom value 3",
-    },
-  ],
+  customFields: [],
   fixedCompanyMessage:
     '<div style="font-weight: 600; margin-bottom: 12px; font-size: 0.875rem;">ACH DELIVERY INSTRUCTIONS:</div><div>Beneficiary Bank: JP Morgan Chase</div><div>ABA Routing Number: 267084131</div><div>Account Name: INSPYR Solutions, LLC</div><div>Account Number: 909331909</div><div>Remittance: cashposting@INSPYRSolutions.com</div><div style="margin-top: 12px; font-style: italic;">Please include your invoice number with your payment.</div>',
-  invoicePaymentLink: "localhost:5678",
-  pdfButton: true,
+  invoicePaymentLink: "",
+  pdfButton: false,
   pdfButtonLink: "",
   ourCompanyLogo: "",
   primaryColor: "#0000FF",
 };
 
-const template = Handlebars.compile(invoice);
+// custom fields look like this
+// customFields: [
+//   {
+//     fieldName: "Custom Field",
+//     value: "this is a custom value",
+//   },
+//   {
+//     fieldName: "Custom Field 2",
+//     value: "this is a custom value 3",
+//   },
+// ],
+
+const template = Handlebars.compile(emailMessage);
 
 function generateAndSaveHTML() {
   try {
     console.log("Generating HTML...");
     const html = template(data);
 
-    const outputFile = path.join(__dirname, "invoice_template.html");
+    const outputFile = path.join(__dirname, "invoice.html");
     fs.writeFileSync(outputFile, html);
     console.log(`HTML generated successfully at: ${outputFile}`);
   } catch (error) {
@@ -394,11 +446,10 @@ function generateAndSaveHTML() {
   }
 }
 
-// Initialize chokidar watcher (much more reliable than fs.watch)
 console.log("Setting up file watcher with chokidar...");
 
-// Watch JS and HBS files
-const watcher = chokidar.watch(["./**/*.js", "./**/*.hbs"], {
+// Watch JS files
+const watcher = chokidar.watch(["./InvoiceReminders/*.js"], {
   ignored: /(node_modules|\.git)/,
   persistent: true,
   ignoreInitial: true,
