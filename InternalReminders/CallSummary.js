@@ -64,36 +64,34 @@ const emailMessage = `
                       width="50%"
                       style="vertical-align: top; padding-right: 10px"
                     >
-                      <p style="margin: 0; font-weight: bold; color: #666666">
+                      <p style="margin: 0 0 5px 0; font-weight: bold; color: #666666">
                         Client:
                       </p>
                       <p style="margin: 0 0 10px 0; color: #333333">
-                        Pinnacle LLC
+                        {{contactCompanyName}}
                       </p>
-
-                      <p style="margin: 0; font-weight: bold; color: #666666">
-                        Call Date:
+                       <p style="margin: 0 0 5px 0; font-weight: bold; color: #666666">
+                        Client Email:
                       </p>
                       <p style="margin: 0 0 10px 0; color: #333333">
-                        04/12/2025
+                        {{contactEmail}}
                       </p>
                     </td>
                     <td
                       width="50%"
                       style="vertical-align: top; padding-left: 10px"
                     >
-                      <p style="margin: 0; font-weight: bold; color: #666666">
-                        Call Length:
+                      <p style="margin: 0 0 5px 0; font-weight: bold; color: #666666">
+                       Customer #
                       </p>
                       <p style="margin: 0 0 10px 0; color: #333333">
-                        4 minutes and 24 seconds
+                        {{customerNumber}}
                       </p>
-
-                      <p style="margin: 0; font-weight: bold; color: #666666">
-                        Next Call Date:
+                       <p style="margin: 0 0 5px 0; font-weight: bold; color: #666666">
+                        Call Date:
                       </p>
                       <p style="margin: 0 0 10px 0; color: #333333">
-                        04/17/2025
+                        {{formatDate callDate}}
                       </p>
                     </td>
                   </tr>
@@ -131,8 +129,41 @@ const emailMessage = `
                 >
                   Invoices Discussed
                 </h2>
-
-                <!-- Invoice Item 1 -->
+                
+                {{#each invoiceData}}
+               
+                <!-- Invoice Items -->
+                {{#if (equals tag 'willPay')}}
+                  <table
+                    cellpadding="0"
+                    cellspacing="0"
+                    border="0"
+                    width="100%"
+                    style="
+                      margin-bottom: 10px;
+                      background-color: #f9f9f9;
+                      border-left: 4px solid #4caf50;
+                      border-radius: 3px;
+                    "
+                  >
+                    <tr>
+                      <td style="padding: 20px">
+                        <p style="margin: 0; font-weight: bold; font-size: 16px">
+                          Invoice #{{invoiceNumber}}
+                        </p>
+                      </td>
+                        <td width="55%">
+                          <p style="margin: 0 0 0 0; color: #666666">
+                            Status:
+                            <span style="color: #4caf50; font-weight: bold">
+                            Scheduled for {{formatDate promiseDate}}
+                            </span>
+                          </p>
+                      </td>
+                    </tr>
+                  </table>
+                {{/if}}
+                {{#if (equals tag 'wasPaid')}}
                 <table
                   cellpadding="0"
                   cellspacing="0"
@@ -141,45 +172,29 @@ const emailMessage = `
                   style="
                     margin-bottom: 10px;
                     background-color: #f9f9f9;
-                    border-left: 4px solid #4caf50;
+                    border-left: 4px solid #ff9800;
                     border-radius: 3px;
                   "
                 >
                   <tr>
-                    <td style="padding: 12px">
+                    <td style="padding: 20px">
                       <p style="margin: 0; font-weight: bold; font-size: 16px">
-                        Invoice #5901
+                        Invoice #{{invoiceNumber}}
                       </p>
-                      <table
-                        cellpadding="0"
-                        cellspacing="0"
-                        border="0"
-                        width="100%"
-                      >
-                        <tr>
-                          <td width="50%">
-                            <p style="margin: 5px 0 0 0; color: #666666">
-                              Amount:
-                              <span style="color: #333333; font-weight: bold"
-                                >$1,200</span
-                              >
-                            </p>
-                          </td>
-                          <td width="50%">
-                            <p style="margin: 5px 0 0 0; color: #666666">
-                              Status:
-                              <span style="color: #4caf50; font-weight: bold"
-                                >Paid</span
-                              >
-                            </p>
-                          </td>
-                        </tr>
-                      </table>
+                     </td>
+                      <td width="55%">
+                        <p style="margin: 0 0 0 0; color: #666666">
+                          Status:
+                          <span style="color: #ff9800; font-weight: bold">
+                          Payment Research Required
+                          </span>
+                        </p>
                     </td>
                   </tr>
                 </table>
-
-                <!-- Invoice Item 2 -->
+                {{/if}}
+                
+                {{#if (equals tag 'shouldEscalate')}}
                 <table
                   cellpadding="0"
                   cellspacing="0"
@@ -187,91 +202,30 @@ const emailMessage = `
                   width="100%"
                   style="
                     margin-bottom: 10px;
-                    background-color: #f9f9f9;
-                    border-left: 4px solid #ffc107;
-                    border-radius: 3px;
-                  "
-                >
-                  <tr>
-                    <td style="padding: 12px">
-                      <p style="margin: 0; font-weight: bold; font-size: 16px">
-                        Invoice #6701
-                      </p>
-                      <table
-                        cellpadding="0"
-                        cellspacing="0"
-                        border="0"
-                        width="100%"
-                      >
-                        <tr>
-                          <td width="50%">
-                            <p style="margin: 5px 0 0 0; color: #666666">
-                              Amount:
-                              <span style="color: #333333; font-weight: bold"
-                                >$1,000</span
-                              >
-                            </p>
-                          </td>
-                          <td width="50%">
-                            <p style="margin: 5px 0 0 0; color: #666666">
-                              Status:
-                              <span style="color: #ffc107; font-weight: bold"
-                                >Scheduled for 04/17/2025</span
-                              >
-                            </p>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-
-                <!-- Invoice Item 3 -->
-                <table
-                  cellpadding="0"
-                  cellspacing="0"
-                  border="0"
-                  width="100%"
-                  style="
-                    margin-bottom: 0;
                     background-color: #f9f9f9;
                     border-left: 4px solid #f44336;
                     border-radius: 3px;
                   "
                 >
                   <tr>
-                    <td style="padding: 12px">
+                    <td style="padding: 20px">
                       <p style="margin: 0; font-weight: bold; font-size: 16px">
-                        Invoice #7749
+                        Invoice #{{invoiceNumber}}
                       </p>
-                      <table
-                        cellpadding="0"
-                        cellspacing="0"
-                        border="0"
-                        width="100%"
-                      >
-                        <tr>
-                          <td width="50%">
-                            <p style="margin: 5px 0 0 0; color: #666666">
-                              Amount:
-                              <span style="color: #333333; font-weight: bold"
-                                >$1,800</span
-                              >
-                            </p>
-                          </td>
-                          <td width="50%">
-                            <p style="margin: 5px 0 0 0; color: #666666">
-                              Status:
-                              <span style="color: #f44336; font-weight: bold"
-                                >Pending Review</span
-                              >
-                            </p>
-                          </td>
-                        </tr>
-                      </table>
+                     </td>
+                      <td width="55%">
+                        <p style="margin: 0 0 0 0; color: #666666">
+                          Status:
+                          <span style="color: #f44336; font-weight: bold">
+                          Escalation Required
+                          </span>
+                        </p>
                     </td>
                   </tr>
                 </table>
+                {{/if}}
+                
+                {{/each}}
               </td>
             </tr>
           </table>
@@ -306,64 +260,101 @@ const emailMessage = `
                   Call Summary
                 </h2>
                 <p style="margin: 0; line-height: 1.5; color: #333333">
-                  The call was between Pinnacle LLC and Kylie from the accounts
-                  receivable team at Inspire Solutions regarding three open
-                  invoices with Pinnacle. The invoices discussed were: Invoice
-                  #5901 for $1200, which the user initially stated would be paid
-                  on Monday but later revealed had already been paid that
-                  morning; Invoice #6701 for $1000, which is planned for payment
-                  on Wednesday, April 17th; and Invoice #7749 for $1800, which
-                  is pending due to ongoing discussions about a possible cost
-                  adjustment. The user confirmed that payments for the first two
-                  invoices will be made by Pinnacle LLC. Kylie will update the
-                  records and send a recap email to the user. The call ended
-                  with both parties confirming the discussion and the user
-                  appreciating Kylie's assistance.
+                {{callSummary}}
                 </p>
               </td>
             </tr>
           </table>
         </td>
       </tr>
-
-      <!-- Escalations Card -->
-      <tr>
-        <td style="padding: 15px 20px 0 20px">
-          <table
-            cellpadding="0"
-            cellspacing="0"
-            border="0"
-            width="100%"
-            style="
-              background-color: #fff8e1;
-              border-radius: 6px;
-              box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-              border-left: 4px solid #ff9800;
-            "
-          >
-            <tr>
-              <td style="padding: 20px">
-                <h2
-                  style="
-                    color: #ff9800;
-                    margin: 0 0 15px 0;
-                    font-size: 18px;
-                    border-bottom: 1px solid #ffe0b2;
-                    padding-bottom: 10px;
-                  "
-                >
-                  Escalations
-                </h2>
+      
+      {{#if (contains invoiceData 'escalationNotes')}}
+        <!-- Escalations Card -->
+        <tr>
+          <td style="padding: 15px 20px 0 20px">
+            <table
+              cellpadding="0"
+              cellspacing="0"
+              border="0"
+              width="100%"
+              style="
+                background-color: #fff8e1;
+                border-radius: 6px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                border-left: 4px solid #ff9800;
+              "
+            >
+              <tr>
+                <td style="padding: 20px">
+                  <h2
+                    style="
+                      color: #ff9800;
+                      margin: 0 0 0 0;
+                      font-size: 18px;
+                      border-bottom: 1px solid #ffe0b2;
+                    "
+                  >
+                    Escalations
+                  </h2>
+                </td>
+              </tr>
+              {{#each invoiceData}}
+              {{#if (equals tag 'shouldEscalate')}}
+              <tr>
+              <td style="padding: 0 20px 15px 20px">
                 <p style="margin: 0; line-height: 1.5; color: #333333">
-                  <strong>Invoice #7749:</strong> The client is waiting to hear
-                  back from INSPYR about a possible adjustment to the cost and
-                  may be eligible for a refund or lower price.
+                <strong>Invoice #{{invoiceNumber}}:</strong> {{escalationNotes}}
                 </p>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
+             </td>
+              </tr>
+              {{/if}}
+              {{/each}}
+            </table>
+          </td>
+        </tr>
+        {{/if}}
+        
+      <!-- Client Related Updates -->
+      {{#if clientUpdates}}
+      <tr>
+          <td style="padding: 15px 20px 0 20px">
+            <table
+              cellpadding="0"
+              cellspacing="0"
+              border="0"
+              width="100%"
+              style="
+                background-color: #fff8e1;
+                border-radius: 6px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                border-left: 4px solid #ff9800;
+              "
+            >
+              <tr>
+                <td style="padding: 20px">
+                  <h2
+                    style="
+                      color: #ff9800;
+                      margin: 0 0 0 0;
+                      font-size: 18px;
+                      border-bottom: 1px solid #ffe0b2;
+                    "
+                  >
+                    Client Updates
+                  </h2>
+                </td>
+              </tr>
+              <tr>
+              <td style="padding: 0 20px 15px 20px">
+                <p style="margin: 0; line-height: 1.5; color: #333333">
+                {{clientUpdates}}
+                </p>
+             </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      {{/if}}
 
       <!-- Recording Link Card -->
       <tr>
@@ -381,6 +372,7 @@ const emailMessage = `
             "
           >
             <tr>
+            {{#if callRecordingLink}}
               <td style="padding: 20px; text-align: center">
                 <h2
                   style="
@@ -394,7 +386,7 @@ const emailMessage = `
                   Call Recording
                 </h2>
                 <a
-                  href="https://drive.google.com/file/d/1qTsY7UIuV9l_rOJEHKOcHNVDiDcX0y6-/view?usp=sharing"
+                  href="{{callRecordingLink}}"
                   target="_blank"
                   style="
                     display: inline-block;
@@ -408,6 +400,7 @@ const emailMessage = `
                   >Listen to Full Recording</a
                 >
               </td>
+              {{/if}}
             </tr>
           </table>
         </td>
@@ -419,7 +412,43 @@ const emailMessage = `
 
 const template = Handlebars.compile(emailMessage);
 
-const data = {};
+const data = {
+  contactCompanyName: "Pinnacle Systems",
+  contactEmail: "pinnacle@email.com",
+  callDate: "2025-05-12",
+  customerNumber: 1101,
+  invoiceData: [
+    {
+      invoiceNumber: "1001",
+      tag: "shouldEscalate",
+      promiseDate: null,
+      escalationNotes: null,
+    },
+    {
+      invoiceNumber: "1003",
+      tag: "willPay",
+      promiseDate: "2025-05-12",
+      escalationNotes: null,
+    },
+    {
+      invoiceNumber: "1002",
+      tag: "shouldEscalate",
+      promiseDate: null,
+      escalationNotes: null,
+    },
+    {
+      invoiceNumber: "1004",
+      tag: "wasPaid",
+      promiseDate: null,
+      escalationNotes: null,
+    },
+  ],
+  callSummary:
+    "Pinnacle Systems was contacted regarding two open invoices. The client was unsure about Invoice #1001 and requested it to be resent. The client confirmed they will pay Invoice #1002 by the end of day Thursday, May 8th. The payment for Invoice #1002 will be made by check from Pinnacle. The client was unclear about the status of Invoice #1001 and requested further clarification. The accounts receivable team will resend Invoice #1001 and look into it further to ensure everything is in order.",
+  clientUpdates:
+    "The client has requested to change their billing contact. The new information is ...",
+  callRecordingLink: "templink",
+};
 
 function generateAndSaveHTML() {
   try {

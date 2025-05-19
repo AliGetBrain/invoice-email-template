@@ -57,6 +57,16 @@ const registerHelpers = () => {
     const now = new Date();
     return now > dueDateObj;
   });
+
+  Handlebars.registerHelper("contains", function (array, field) {
+    if (!array || !Array.isArray(array)) {
+      return false;
+    }
+
+    return array.some((item) => {
+      return item[field] !== undefined && item[field] !== null;
+    });
+  });
 };
 
 module.exports = { registerHelpers };
