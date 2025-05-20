@@ -109,13 +109,15 @@ const emailMessage = `<!DOCTYPE html>
                         {{#if (and contactShipAddr.city contactShipAddr.state)}}<div>{{contactShipAddr.city}}, {{contactShipAddr.state}} {{#if contactShipAddr.zipCode}}{{contactShipAddr.zipCode}}{{/if}}</div>{{/if}}
                         {{/if}}
                   </td>
-                {{/if}}
-                <td style="width: 33%; vertical-align: top; text-align: right;">
-                    {{#if customerNumber}}<div><span style="font-weight: 600; color: #374151;">CUSTOMER #</span> {{customerNumber}}</div>{{/if}}
-                    {{#if invoiceNumber}}<div><span style="font-weight: 600; color: #374151;">INVOICE #</span> {{invoiceNumber}}</div>{{/if}}
-                    {{#if transactionDate}}<div><span style="font-weight: 600; color: #374151;">DATE</span> {{formatDate transactionDate}}</div>{{/if}}
-                    {{#if dueDate}}<div><span style="font-weight: 600; color: #374151;">DUE DATE</span> {{formatDate dueDate}}</div>{{/if}}
-                    {{#if salesTerm}}<div><span style="font-weight: 600; color: #374151;">TERMS</span> {{salesTerm}}</div>{{/if}}
+                  {{else}}
+                  <td style="width: 33%;"></td>
+                {{/if}} 
+                <td style="width: 33%; vertical-align: top; text-align: left; padding-left: 50px;">
+                    {{#if customerNumber}}<div><span style="font-weight: 600; color: #374151; font-size: 0.95rem;">CUSTOMER#</span> {{customerNumber}}</div>{{/if}}
+                    {{#if invoiceNumber}}<div><span style="font-weight: 600; color: #374151; font-size: 0.95rem;">INVOICE#</span> {{invoiceNumber}}</div>{{/if}}
+                    {{#if transactionDate}}<div><span style="font-weight: 600; color: #374151; font-size: 0.95rem;">DATE&hyphen;</span> {{formatDate transactionDate}}</div>{{/if}}
+                    {{#if dueDate}}<div><span style="font-weight: 600; color: #374151; font-size: 0.95rem;">DUE DATE&hyphen;</span> {{formatDate dueDate}}</div>{{/if}}
+                    {{#if salesTerm}}<div><span style="font-weight: 600; color: #374151; font-size: 0.95rem;">TERMS&hyphen;</span> {{salesTerm}}</div>{{/if}}
                 </td>
             </tr>
         </table>
@@ -173,49 +175,49 @@ const emailMessage = `<!DOCTYPE html>
         <!-- Invoice Table -->
         {{#if lineItems}}
           {{#if (hasServiceDate lineItems)}}
-            <table cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: separate; margin: 20px 0;">
+            <table cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: separate; margin: 25px 0;">
               <thead>
                 <tr>
-                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">DATE</th>
-                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">PRODUCT/SERVICE</th>
-                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">DESCRIPTION</th>
-                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">QTY</th>
-                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">RATE</th>
-                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">AMOUNT</th>
+                  <th style="background-color: {{primaryColor}}; padding: 12px 24px; text-align: left; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em; width: 10%;">DATE</th>
+                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: left; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em; width: 20%;">SERVICE</th>
+                  <th style="background-color: {{primaryColor}}; padding: 12px 4px; text-align: left; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em; width: 42%;">DESCRIPTION</th>
+                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em; width: 8%;">QTY</th>
+                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em; width: 8%;">RATE</th>
+                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em; width: 12%;">AMOUNT</th>
                 </tr>
               </thead>
               <tbody>
                 {{#each lineItems}}
                   <tr>
-                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">{{#if serviceDate}}{{formatDate serviceDate}}{{else}}&nbsp;{{/if}}</td>
-                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">{{service}}</td>
-                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">{{description}}</td>
-                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center;">{{quantity}}</td>
-                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center;">{{formatValue rate}}</td>
-                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center;">{{formatValue amount}}</td>
+                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; font-size: 0.875rem;">{{#if serviceDate}}{{formatDate serviceDate}}{{else}}&nbsp;{{/if}}</td>
+                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; font-size: 0.875rem;">{{service}}</td>
+                    <td style="border-bottom: 1px solid #e5e7eb; color: #4b5563; font-size: 0.875rem;">{{description}}</td>
+                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; font-size: 0.875rem; text-align: center;">{{quantity}}</td>
+                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; font-size: 0.875rem; text-align: center;">{{formatValue rate}}</td>
+                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; font-size: 0.875rem; text-align: center;">{{formatValue amount}}</td>
                   </tr>
                 {{/each}}
               </tbody>
             </table>
           {{else}}
-            <table cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: separate; margin: 20px 0;">
+            <table cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: separate; margin: 30px 0;">
               <thead>
                 <tr>
-                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">PRODUCT/SERVICE</th>
-                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">DESCRIPTION</th>
-                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">QTY</th>
-                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">RATE</th>
-                  <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em;">AMOUNT</th>
+              <th style="background-color: {{primaryColor}}; padding: 12px 20px; text-align: left; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em; width: 20%;">SERVICE</th>
+              <th style="background-color: {{primaryColor}}; padding: 12px 4px; text-align: left; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em; width: 45%;">DESCRIPTION</th>
+              <th style="background-color: {{primaryColor}}; padding: 12px 1px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em; width: 8%;">QTY</th>
+              <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em; width: 12%;">RATE</th>
+              <th style="background-color: {{primaryColor}}; padding: 12px 16px; text-align: center; font-size: 0.875rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.05em; width: 15%;">AMOUNT</th>
                 </tr>
               </thead>
               <tbody>
                 {{#each lineItems}}
                   <tr>
-                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">{{service}}</td>
-                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">{{description}}</td>
-                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center;">{{quantity}}</td>
-                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center;">{{formatValue rate}}</td>
-                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center;">{{formatValue amount}}</td>
+                    <td style="padding: 16px;border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: left; width: 20%; font-size: 0.875rem;">{{service}}</td>
+                    <td style="border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: left; width: 45%; font-size: 0.875rem;">{{description}}</td>
+                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center; width: 8%; font-size: 0.875rem;">{{quantity}}</td>
+                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center; width: 12%; font-size: 0.875rem;">{{formatValue rate}}</td>
+                    <td style="padding: 16px; border-bottom: 1px solid #e5e7eb; color: #4b5563; text-align: center; width: 15%; font-size: 0.875rem;">{{formatValue amount}}</td>
                   </tr>
                 {{/each}}
               </tbody>
@@ -227,22 +229,26 @@ const emailMessage = `<!DOCTYPE html>
         <table cellpadding="0" cellspacing="0" style="width: 100%; margin-top: 30px;">
             <tr>
                 <td style="width: 50%; vertical-align: top;">
-                    {{#if customMessage}} <div style="color: #6b7280; font-size: 0.95rem; text-align: left; max-width: 300px; margin-bottom: 50px">
-                        {{customMessage}}
-                    </div> {{/if}}
-                    {{#if fixedCompanyMessage}}
-                    <div style="border: 2px solid {{primaryColor}}; border-radius: 8px; padding: 20px; color: #4b5563; font-size: 0.85rem; text-align: left; max-width: 300px; line-height: 1.8;">
-                      {{{fixedCompanyMessage}}}
-                    </div>
-                    {{/if}}
-                </td>
+                  <div style="height: 100%; display: flex; flex-direction: column; justify-content: flex-end; gap: 20px;">
+                      {{#if customMessage}} 
+                      <div style="color: #6b7280; font-size: 0.85rem; text-align: left; margin-bottom: 20px">
+                          {{customMessage}}
+                      </div> 
+                      {{/if}}
+                      {{#if fixedCompanyMessage}}
+                      <div style="border: 2px solid {{primaryColor}}; border-radius: 8px; padding: 25px; color: #4b5563; font-size: 0.85rem; text-align: left; line-height: 1.8; ">
+                          {{{fixedCompanyMessage}}}
+                      </div>
+                      {{/if}}
+                  </div>
+              </td>
             
                 <td style="width: 50%; vertical-align: top;">
-                    <table cellpadding="0" cellspacing="0" style="width: 100%; margin-left: auto;">
-                      {{#if (greaterThan lineItems.length 2)}}
+                    <table cellpadding="0" cellspacing="0" style="width: 80%; margin-left: auto;">
+                      {{#if (greaterThan lineItems.length 1)}}
                           {{#if subTotal}}
                             <tr>
-                                <td style="padding: 8px 0; font-size: 0.95rem;">SUBTOTAL</td>
+                                <td style=" padding: 8px 0; font-size: 0.95rem;">SUBTOTAL</td>
                                 <td style="padding: 8px 20px 8px 0; font-size: 0.95rem; text-align: right;">{{formatValue subTotal}}</td>
                             </tr>
                           {{/if}}
@@ -250,7 +256,7 @@ const emailMessage = `<!DOCTYPE html>
 
                       {{#if discounts}}
                         <tr>
-                            <td style="padding: 8px 0; font-size: 0.95rem;">DISCOUNTS </td>
+                            <td style=" padding: 8px 0px; font-size: 0.95rem;">DISCOUNTS </td>
                             <td style="padding: 8px 20px 8px 0; font-size: 0.95rem; text-align: right;">- {{formatValue discounts}}</td>
                         </tr>
                       {{/if}}
@@ -281,14 +287,14 @@ const emailMessage = `<!DOCTYPE html>
                       {{/if}}  
                        {{#if balanceDue}}   
                       <tr>
-                          <td colspan="2" style="padding: 20px 20px 0px 0; border-top: 1px solid #e5e7eb; font-size: 1.25rem; font-weight: 700; color: {{primaryColor}}; text-align: right;">
+                          <td colspan="2" style="padding: 20px 10px 0px 0; border-top: 1px solid #e5e7eb; font-size: 1.2rem; font-weight: 700; color: {{primaryColor}}; text-align: right;">
                               BALANCE DUE {{formatValue balanceDue}}
                           </td>
                       </tr>
                       {{/if}}
                       {{#if (checkOverDue dueDate) }}
                          <tr>
-                            <td colspan="2" style="padding: 20px 20px 0px 0; font-size: 1.25rem; font-weight: 700; color: #e74c3c; text-align: right;">
+                            <td colspan="2" style="padding: 10px 10px 0px 0; font-size: 1.2rem; font-weight: 700; color: #e74c3c; text-align: right;">
                                 OVERDUE {{formatDate dueDate}}
                             </td>
                         </tr>
@@ -342,21 +348,15 @@ const emailMessage = `<!DOCTYPE html>
 </html>`;
 
 const data = {
-  outReachMessage: "inspyrWeeklyOverDue",
-  invoiceNumber: 1007,
+  outReachMessage: "",
+  invoiceNumber: 10073213232,
   transactionDate: "2024-12-24",
   dueDate: "2025-01-23",
-  customerNumber: "",
+  customerNumber: 121231321,
   contactCompanyName: "John Melton",
   contactName: "John Melton",
   contactEmail: "John@Melton.com",
   contactBillAddr: {
-    streetAddress: "Fake Street 123",
-    city: "Fake City",
-    state: "CA",
-    zipCode: "12345",
-  },
-  customerShipAddr: {
     streetAddress: "Fake Street 123",
     city: "Fake City",
     state: "CA",
@@ -370,12 +370,13 @@ const data = {
   salesTerm: "Net 30",
   lineItems: [
     {
-      service: "Item 3",
-      serviceDate: "",
-      description: "Some Description Here",
+      service: "Invoice 1 of 2 ",
+      serviceDate: "2025-04-12",
+      description:
+        "Southern Ionics Incorporated - INSPYR-2024-12-30-11 - Fidelity_401K Import",
       quantity: "1",
-      rate: "50",
-      amount: "50",
+      rate: "5000",
+      amount: "50000",
     },
     {
       service: "Item 2",
@@ -385,21 +386,13 @@ const data = {
       rate: "35",
       amount: "35",
     },
-    {
-      service: "Item 3",
-      serviceDate: "",
-      description: "Some Description Here",
-      quantity: "2",
-      rate: "50",
-      amount: "10",
-    },
   ],
   subTotal: 185,
   discounts: 10,
   totalAmount: 175,
   shippingAmount: 0,
   amountPaid: 20,
-  balanceDue: 165,
+  balanceDue: 1653422,
   customMessage: "Thank you for your business and have a great day! ",
   ourCompanyName: "Our Company",
   ourCompanyAddr: {
@@ -416,7 +409,7 @@ const data = {
   pdfButton: false,
   pdfButtonLink: "",
   ourCompanyLogo: "",
-  primaryColor: "#0000FF",
+  primaryColor: "#0277BD",
 };
 
 // custom fields look like this
