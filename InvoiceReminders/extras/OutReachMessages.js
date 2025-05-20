@@ -1,7 +1,7 @@
 const greeting = `
     <div style="margin-bottom: 40px; padding: 24px; background-color: white; border-radius: 8px; color: #4b5563; font-family: Arial, Helvetica, sans-serif;">
     <!-- Message Section -->
-        <p style="margin: 0 0 16px 0; font-size: 1rem; font-weight: 500;">Hello {{#if contactName}}{{contactName}}{{/if}},</p>
+        <p style="margin: 0 0 16px 0; font-size: 1rem; font-weight: 500;">Hello{{#if contactName}} {{contactName}},{{else}},{{/if}}</p>
          `;
 
 const signOff = `

@@ -4,13 +4,15 @@
   "main": "HandleBarHelpers.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev:invoice": "nodemon InvoiceReminders/InvoiceEmail.js --ext js",
-    "dev:callSummary": "nodemon InternalReminders/CallSummary.js --ext js",
-    "dev:secondFailedCall": "nodemon ClientReminders/SecondFailedCall.js --ext js",
-    "dev:thirdFailedCall": "nodemon InternalReminders/ThirdFailedCall.js --ext js",
+    "dev:Invoice": "nodemon InvoiceReminders/InvoiceEmail.js --ext js",
+    "dev:CallSummary": "nodemon InternalReminders/CallSummary.js --ext js",
+    "dev:WeeklyOverdue": "nodemon ClientReminders/WeeklyOverdue.js --ext js",
+    "dev:FirstFailedCall": "nodemon ClientReminders/FirstFailedCall.js --ext js",
+    "dev:SecondFailedCall": "nodemon ClientReminders/SecondFailedCall.js --ext js",
+    "dev:ThirdFailedCall": "nodemon InternalReminders/ThirdFailedCall.js --ext js",
     "dev:HighRisk": "nodemon InternalReminders/HighRiskOverdue.js --ext js",
     "dev:PaymentCheck": "nodemon ClientReminders/PaymentCheck.js --ext js",
-    "dev:InternalReminders": "nodemon InternalReminders/CheckPausedInvoices.js --ext js"
+    "dev:CheckPaused": "nodemon InternalReminders/CheckPausedInvoices.js --ext js"
   },
   "keywords": [],
   "author": "",

@@ -7,6 +7,10 @@ const chokidar = require("chokidar");
 // activate all helper functions
 registerHelpers();
 
+const subject = `
+Invoice #{{#each invoiceData}}{{invoiceNumber}}{{#unless @last}},{{/unless}}{{/each}}- Client: {{contactCompanyName}}, Call Summary
+`;
+
 const emailMessage = `
 <!DOCTYPE html>
 <html>
@@ -15,15 +19,20 @@ const emailMessage = `
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Call Summary</title>
   </head>
-  <body
-    style="
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
-      color: #333333;
-    "
-  >
+<body
+    style="font-family: Arial, Helvetica, sans-serif; line-height: 1.6; color: #1f2937; max-width: 800px; margin: 0 auto; padding: 40px 20px; background-color: #f9fafb;">
+        <div style="margin-bottom: 12px; background: {{primaryColor}}; border-radius: 8px 8px 0 0; padding: 12px; text-align: center; font-family: Arial, Helvetica, sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td>
+                    <h1 style="color: white; margin: 0; font-size: 1.5rem; font-weight: 600; letter-spacing: 0.025em;">CALL SUMMARY</h1>
+                    <p style="color: rgba(255, 255, 255, 0.9); margin: 8px 0 0 0; font-size: 1rem;">{{contactCompanyName}} - {{formatDate callDate}}</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div style="background: white; border-radius: 12px; padding: 40px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); position: relative; overflow: hidden;">
+
     <table
       cellpadding="0"
       cellspacing="0"
@@ -49,7 +58,7 @@ const emailMessage = `
               <td style="padding: 20px">
                 <h2
                   style="
-                    color: #578fca;
+                    color: {{primaryColor}};
                     margin: 0 0 15px 0;
                     font-size: 18px;
                     border-bottom: 1px solid #eeeeee;
@@ -120,7 +129,7 @@ const emailMessage = `
               <td style="padding: 20px">
                 <h2
                   style="
-                    color: #578fca;
+                    color:{{primaryColor}};
                     margin: 0 0 15px 0;
                     font-size: 18px;
                     border-bottom: 1px solid #eeeeee;
@@ -250,7 +259,7 @@ const emailMessage = `
               <td style="padding: 20px">
                 <h2
                   style="
-                    color: #578fca;
+                    color: {{primaryColor}};
                     margin: 0 0 15px 0;
                     font-size: 18px;
                     border-bottom: 1px solid #eeeeee;
@@ -376,7 +385,7 @@ const emailMessage = `
               <td style="padding: 20px; text-align: center">
                 <h2
                   style="
-                    color: #578fca;
+                    color: {{primaryColor}};
                     margin: 0 0 15px 0;
                     font-size: 18px;
                     border-bottom: 1px solid #eeeeee;
@@ -390,7 +399,7 @@ const emailMessage = `
                   target="_blank"
                   style="
                     display: inline-block;
-                    background-color: #578fca;
+                    background-color: {{primaryColor}};
                     color: #ffffff;
                     text-decoration: none;
                     padding: 10px 20px;
@@ -406,11 +415,10 @@ const emailMessage = `
         </td>
       </tr>
     </table>
+    </div>
   </body>
 </html>
 `;
-
-const template = Handlebars.compile(emailMessage);
 
 const data = {
   contactCompanyName: "Pinnacle Systems",
@@ -448,13 +456,17 @@ const data = {
   clientUpdates:
     "The client has requested to change their billing contact. The new information is ...",
   callRecordingLink: "templink",
+  primaryColor: "#0277BD",
 };
+
+const template = Handlebars.compile(emailMessage);
+const subjectTemplate = Handlebars.compile(subject);
 
 function generateAndSaveHTML() {
   try {
     console.log("Generating HTML...");
     const html = template(data);
-
+    console.log("Subject: ", subjectTemplate(data));
     const outputFile = path.join(__dirname, "call_summary.html");
     fs.writeFileSync(outputFile, html);
     console.log(`HTML generated successfully at: ${outputFile}`);

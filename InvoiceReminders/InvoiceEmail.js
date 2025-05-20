@@ -7,8 +7,10 @@ const {
   recentlyOverdueMessage,
 } = require("./extras/OutReachMessages");
 const {
-  insyprNewClient,
-  inspyrExistingClient,
+  inspyrInitialMessage,
+  inspyrTwoWeeksNewClient,
+  inspyrTwoWeeksEstablishedClient,
+  inspyrDueSoon,
   inspyrOverDue,
   inspyrWeeklyOverDue,
 } = require("./extras/InspyrOutReachMessages");
@@ -20,14 +22,37 @@ const chokidar = require("chokidar");
 // activate all helper functions
 registerHelpers();
 
+const subject = `
+    {{#if (equals outReachMessage 'inspyrInitialMessage') }}
+      Invoice #{{invoiceNumber}}- Client:{{contactCompanyName}}
+    {{/if}}
+
+     {{#if (equals outReachMessage 'inspyrTwoWeeksNewClient') }}
+       Invoice #{{invoiceNumber}}- Client:{{contactCompanyName}}, Follow Up
+    {{/if}}
+
+     {{#if (equals outReachMessage 'inspyrTwoWeeksEstablishedClient') }}
+       Invoice #{{invoiceNumber}}- Client:{{contactCompanyName}}, Follow Up
+    {{/if}}
+
+    {{#if (equals outReachMessage 'inspyrDueSoon') }}
+      Invoice #{{invoiceNumber}}- Client:{{contactCompanyName}}, Due Soon
+    {{/if}}
+
+     {{#if (equals outReachMessage 'inspyrOverDue') }}
+       Invoice #{{invoiceNumber}}- Client:{{contactCompanyName}}, Past Due
+    {{/if}}
+  `;
+
 const emailMessage = `<!DOCTYPE html>
 <html lang="en">
 <head> 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice Template</title>
+    <title>Invoice Outreach</title>
 </head>
 <body style="font-family: Arial, Helvetica, sans-serif; line-height: 1.6; color: #1f2937; max-width: 800px; margin: 0 auto; padding: 40px 20px; background-color: #f9fafb;">
+    
     {{#if (equals outReachMessage 'initialMessage') }}
       ${initialMessage}
     {{/if}}
@@ -48,23 +73,26 @@ const emailMessage = `<!DOCTYPE html>
       ${recentlyOverdueMessage}
     {{/if}}
 
-     {{#if (equals outReachMessage 'insyprNewClient') }}
-      ${insyprNewClient}
+    {{#if (equals outReachMessage 'inspyrInitialMessage') }}
+      ${inspyrInitialMessage}
     {{/if}}
 
-     {{#if (equals outReachMessage 'inspyrExistingClient') }}
-      ${inspyrExistingClient}
+     {{#if (equals outReachMessage 'inspyrTwoWeeksNewClient') }}
+      ${inspyrTwoWeeksNewClient}
+    {{/if}}
+
+     {{#if (equals outReachMessage 'inspyrTwoWeeksEstablishedClient') }}
+      ${inspyrTwoWeeksEstablishedClient}
+    {{/if}}
+
+    {{#if (equals outReachMessage 'inspyrDueSoon') }}
+      ${inspyrDueSoon}
     {{/if}}
 
      {{#if (equals outReachMessage 'inspyrOverDue') }}
       ${inspyrOverDue}
     {{/if}}
 
-     {{#if (equals outReachMessage 'inspyrWeeklyOverDue') }}
-      ${inspyrWeeklyOverDue}
-    {{/if}}
-
-    <body style="font-family: Arial, Helvetica, sans-serif; line-height: 1.6; color: #1f2937; max-width: 800px; margin: 0 auto; padding: 40px 20px; background-color: #f9fafb;">
     <div style="background: white; border-radius: 12px; padding: 40px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); position: relative; overflow: hidden;">
        <!-- Company Info -->
         <div style="display: flex; justify-content: space-between; margin-bottom: 40px;">
@@ -343,24 +371,40 @@ const emailMessage = `<!DOCTYPE html>
           </div>
           {{/if}}
         {{/if}}
+        
+        <!-- Automated message -->
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-family: Arial, Helvetica, sans-serif; font-size: 0.8rem; color: #6b7280; line-height: 1.4; text-align: center;">
+          <p style="margin: 0;">
+              <strong style="color: #4b5563;">This is an automated email. Please do not reply directly to this message. </strong>
+          </p>
+          <p style="margin: 8px 0 0 0;">
+              To send a response, search for the subject line "<span style="font-style: italic;">Invoice #{{invoiceNumber}} &hyphen; Client: {{contactCompanyName}}</span>" 
+              <br>in your inbox and reply to our initial invoice email.
+          </p>
+          <p style="margin: 8px 0 0 0;">
+              For urgent matters, contact your AR Specialist at <span style="color: #2563eb;">{{collectorEmail}}</span>.
+          </p>
+      </div>
     </div>
 </body>
 </html>`;
 
 const data = {
-  outReachMessage: "",
-  invoiceNumber: 10073213232,
-  transactionDate: "2024-12-24",
-  dueDate: "2025-01-23",
-  customerNumber: 121231321,
-  contactCompanyName: "John Melton",
-  contactName: "John Melton",
-  contactEmail: "John@Melton.com",
+  outReachMessage: "inspyrOverDue",
+  invoiceNumber: 1049438,
+  transactionDate: "2024-04-24",
+  dueDate: "2025-05-24",
+  customerNumber: 2189153,
+  collector: "Rachel Gonzalez",
+  collectorEmail: "rgonzalez@inspyrsolutions.com",
+  contactCompanyName: "Southern Ionics",
+  contactName: "Kealy Baxter",
+  contactEmail: "",
   contactBillAddr: {
-    streetAddress: "Fake Street 123",
-    city: "Fake City",
-    state: "CA",
-    zipCode: "12345",
+    streetAddress: "P.O. Drawer 1217",
+    city: "West Point",
+    state: "MS",
+    zipCode: "39773",
   },
   shippingInfo: {
     shipDate: "",
@@ -375,33 +419,25 @@ const data = {
       description:
         "Southern Ionics Incorporated - INSPYR-2024-12-30-11 - Fidelity_401K Import",
       quantity: "1",
-      rate: "5000",
-      amount: "50000",
-    },
-    {
-      service: "Item 2",
-      serviceDate: "",
-      description: "Some Description Here",
-      quantity: "1",
-      rate: "35",
-      amount: "35",
+      rate: "1800",
+      amount: "1800",
     },
   ],
-  subTotal: 185,
-  discounts: 10,
-  totalAmount: 175,
+  subTotal: 1880,
+  discounts: 0,
+  totalAmount: 1880,
   shippingAmount: 0,
-  amountPaid: 20,
-  balanceDue: 1653422,
+  amountPaid: 0,
+  balanceDue: 1880,
   customMessage: "Thank you for your business and have a great day! ",
-  ourCompanyName: "Our Company",
+  ourCompanyName: "INSPYR Solutions, LLC",
   ourCompanyAddr: {
-    streetAddress: "Super Fake Street 123",
-    city: "Fake City",
+    streetAddress: "P.O. Box 737249",
+    city: "Dallas",
     state: "TX",
-    zipCode: "12345",
+    zipCode: "75373-7249",
   },
-  ourCompanyEmail: "fakemail@example.com",
+  ourCompanyEmail: "",
   customFields: [],
   fixedCompanyMessage:
     '<div style="font-weight: 600; margin-bottom: 12px; font-size: 0.875rem;">ACH DELIVERY INSTRUCTIONS:</div><div>Beneficiary Bank: JP Morgan Chase</div><div>ABA Routing Number: 267084131</div><div>Account Name: INSPYR Solutions, LLC</div><div>Account Number: 909331909</div><div>Remittance: cashposting@INSPYRSolutions.com</div><div style="margin-top: 12px; font-style: italic;">Please include your invoice number with your payment.</div>',
@@ -425,12 +461,13 @@ const data = {
 // ],
 
 const template = Handlebars.compile(emailMessage);
+const subjectTemplate = Handlebars.compile(subject);
 
 function generateAndSaveHTML() {
   try {
-    console.log("Generating HTML...");
+    console.log("Generating HTML");
     const html = template(data);
-
+    console.log("Subject:", subjectTemplate(data));
     const outputFile = path.join(__dirname, "invoice.html");
     fs.writeFileSync(outputFile, html);
     console.log(`HTML generated successfully at: ${outputFile}`);

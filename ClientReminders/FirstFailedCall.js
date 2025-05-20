@@ -1,20 +1,33 @@
-<!DOCTYPE html>
+const Handlebars = require("handlebars");
+const { registerHelpers } = require("../HandleBarHelpers");
+const fs = require("node:fs");
+const path = require("node:path");
+const chokidar = require("chokidar");
+
+// activate all helper functions
+registerHelpers();
+
+const subject = `
+Invoice #{{#each invoiceData}}{{invoiceNumber}}{{#unless @last}},{{/unless}}{{/each}}- Client: {{contactCompanyName}}, Missed Call
+`;
+
+const emailMessage = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment not found</title>
+    <title>First Call Miss</title>
 </head>
 
 <body
     style="font-family: Arial, Helvetica, sans-serif; line-height: 1.6; color: #1f2937; max-width: 800px; margin: 0 auto; padding: 40px 20px; background-color: #f9fafb;">
     <div
-        style="margin-bottom: 12px; background: #0277BD; border-radius: 8px 8px 0 0; padding: 24px; text-align: center; font-family: Arial, Helvetica, sans-serif;">
+        style="margin-bottom: 12px; background: {{primaryColor}}; border-radius: 8px 8px 0 0; padding: 24px; text-align: center; font-family: Arial, Helvetica, sans-serif;">
         <table width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr>
                 <td>
                     <h1 style="color: white; margin: 0; font-size: 1.5rem; font-weight: 600; letter-spacing: 0.025em;">
-                        INVOICE PAYMENTS NOT FOUND</h1>
+                        MISSED CALL</h1>
                     <p style="color: rgba(255, 255, 255, 0.9); margin: 8px 0 0 0; font-size: 1rem;">INSPYR SOLUTIONS LLC
                     </p>
                 </td>
@@ -25,10 +38,10 @@
         style="background: white; border-radius: 12px; padding: 40px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); position: relative; overflow: hidden;">
 
          <div style="margin-bottom: 12px; padding: 24px; background-color: white; border-radius: 8px; color: #4b5563; font-family: Arial, Helvetica, sans-serif;">
-        <p style="margin: 0 0 16px 0; font-size: 1rem; font-weight: 500;">Hello Kealy Baxter,</p>
+        <p style="margin: 0 0 16px 0; font-size: 1rem; font-weight: 500;">Hello{{#if contactName}} {{contactName}},{{else}},{{/if}}</p>
 
         <p style="margin: 0 0 16px 0; font-size: 1rem; line-height: 1.6">
-           During our recent phone conversation, you mentioned the following invoices were paid:
+            We've attempted to contact you via phone regarding the following outstanding invoices:
         </p>
 
        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="
@@ -60,47 +73,33 @@
                         </tr>
                         
                         <!-- Invoice Data Rows -->
+                        {{#each invoiceData}}
                         <tr>
                             <td style="padding: 16px; width: 33%; vertical-align: top; text-align: center;">
                                 <p style="margin: 0; font-size: 16px; color: #333333; font-weight: 600;">
-                                    1001
+                                    {{invoiceNumber}}
                                 </p>
                             </td>
                             <td style="padding: 16px; width: 33%; vertical-align: top; text-align: center;">
                                 <p style="margin: 0; font-size: 16px; color: #333333; font-weight: 600;">
-                                    $1880.00
+                                    {{formatValue amount}}
                                 </p>
                             </td>
                             <td style="padding: 16px; width: 33%; vertical-align: top; text-align: center;">
                                 <p style="margin: 0; font-size: 16px; color: #e74c3c; font-weight: 600;">
-                                    5/22/2025
+                                    {{formatDate dueDate}}
                                 </p>
                             </td>
                         </tr>
-                        <tr>
-                            <td style="padding: 16px; width: 33%; vertical-align: top; text-align: center;">
-                                <p style="margin: 0; font-size: 16px; color: #333333; font-weight: 600;">
-                                    1001
-                                </p>
-                            </td>
-                            <td style="padding: 16px; width: 33%; vertical-align: top; text-align: center;">
-                                <p style="margin: 0; font-size: 16px; color: #333333; font-weight: 600;">
-                                    $1880.00
-                                </p>
-                            </td>
-                            <td style="padding: 16px; width: 33%; vertical-align: top; text-align: center;">
-                                <p style="margin: 0; font-size: 16px; color: #e74c3c; font-weight: 600;">
-                                    5/22/2025
-                                </p>
-                            </td>
-                        </tr>
+                        {{/each}}
                     </table>
                 </td>
             </tr>
         </table>
 
         <p style="margin-bottom: 12px; font-size: 1rem;">
-            Our records still show these as unpaid. Please verify payment details and provide confirmation.
+            Please note we will try calling in a few days. <br>
+            We kindly ask that you answer our call as the number is for outbound communication only and cannot receive incoming calls.
         </p>
 
           <p style="margin: 0; font-size: 1rem;">
@@ -117,12 +116,12 @@
                     message. </strong>
             </p>
             <p style="margin: 8px 0 0 0;">
-            If you have questions about a specific Invoice, search for the subject line "<span style="font-style: italic;">Invoice# (Number) &hyphen; Client: Southern Ionics</span>"
+            If you have questions about a specific Invoice, search for the subject line "<span style="font-style: italic;">Invoice# (Number) &hyphen; Client: {{contactCompanyName}}</span>"
                 <br>in your inbox and reply to our initial invoice email.
             </p>
             <p style="margin: 8px 0 0 0;">
                 For urgent matters, contact your AR Specialist at <span
-                    style="color: #2563eb;">rgonzalez@inspyrsolutions.com</span>.
+                    style="color: #2563eb;">{{collectorEmail}}</span>.
             </p>
             
         </div>
@@ -130,3 +129,67 @@
         
 </body>
 </html>
+`;
+
+const data = {
+  contactCompanyName: "Southern Ionics",
+  contactName: "Kealy Baxter",
+  collector: "Rachel Gonzalez",
+  collectorEmail: "rgonzalez@inspyrsolutions.com",
+  invoiceData: [
+    {
+      invoiceNumber: 1001,
+      amount: 1880,
+      dueDate: "2025-05-23",
+    },
+    {
+      invoiceNumber: 1001,
+      amount: 1880,
+      dueDate: "2025-05-23",
+    },
+  ],
+  primaryColor: "#0277BD",
+};
+
+const template = Handlebars.compile(emailMessage);
+const subjectTemplate = Handlebars.compile(subject);
+function generateAndSaveHTML() {
+  try {
+    console.log("Generating HTML...");
+    const html = template(data);
+    console.log("Subject: ", subjectTemplate(data));
+    const outputFile = path.join(__dirname, "first_failed_call.html");
+    fs.writeFileSync(outputFile, html);
+    console.log(`HTML generated successfully at: ${outputFile}`);
+  } catch (error) {
+    console.error("Error generating HTML:", error);
+  }
+}
+
+console.log("Setting up file watcher with chokidar...");
+
+// Watch JS files
+const watcher = chokidar.watch(["./ClientReminders/*.js"], {
+  ignored: /(node_modules|\.git)/,
+  persistent: true,
+  ignoreInitial: true,
+  awaitWriteFinish: {
+    stabilityThreshold: 300,
+    pollInterval: 100,
+  },
+});
+
+// Add event listeners
+watcher
+  .on("change", (path) => {
+    console.log(`File ${path} has changed, regenerating HTML...`);
+    generateAndSaveHTML();
+  })
+  .on("error", (error) => console.error(`Watcher error: ${error}`))
+  .on("ready", () =>
+    console.log("Initial scan complete. Ready for changes...")
+  );
+
+// Initial generation
+console.log("Performing initial HTML generation...");
+generateAndSaveHTML();
