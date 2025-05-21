@@ -430,7 +430,8 @@ const data = {
       invoiceNumber: "1001",
       tag: "shouldEscalate",
       promiseDate: null,
-      escalationNotes: null,
+      escalationNotes:
+        "The client said they are unable to pay the invoice becuase the project is not complete",
     },
     {
       invoiceNumber: "1003",
@@ -442,7 +443,8 @@ const data = {
       invoiceNumber: "1002",
       tag: "shouldEscalate",
       promiseDate: null,
-      escalationNotes: null,
+      escalationNotes:
+        "The client says they can not pay the invoice because the invoice is incorrect",
     },
     {
       invoiceNumber: "1004",

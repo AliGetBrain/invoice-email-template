@@ -140,65 +140,75 @@ const inspyrOverDue = `
 `;
 
 const inspyrWeeklyOverDue = `
+    <div
+        style="margin-bottom: 12px; background: {{primaryColor}}; border-radius: 8px 8px 0 0; padding: 24px; text-align: center; font-family: Arial, Helvetica, sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td>
+                    <h1 style="color: white; margin: 0; font-size: 1.5rem; font-weight: 600; letter-spacing: 0.025em;">
+                        OVERDUE INVOICE REMINDER</h1>
+                    <p style="color: rgba(255, 255, 255, 0.9); margin: 8px 0 0 0; font-size: 1rem;">INSPYR SOLUTIONS LLC
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </div>
 ${greeting}
 <p style="margin: 0 0 16px 0; font-size: 1rem; line-height: 1.6;">
-        We are reaching back out to you for an update on the invoice(s) listed below.
+        We are reaching back out to you for an update on the invoice listed below as it has exceeded net terms.
     </p>
 
-    <p style="margin: 0 0 16px 0; font-size: 1rem; line-height: 1.6;">
-        Please note all items shown are now considered past due and the resolution of this (these)
-        charge(s) is (are) required:
-    </p>
+   <ul style="font-family: Arial, Helvetica, sans-serif; padding-left: 20px; margin-bottom: 20px;">
+            <li style="margin: 0 0 16px 0; font-size: 1rem; line-height: 1.6">
+                If a payment has already been made, please provide the payment date, the amount, and the payment delivery method.
+            </li>
+            <li style="margin: 0 0 16px 0; font-size: 1rem; line-height: 1.6">
+                If payment was made via check, please provide the address the check was mailed to.
+            </li>
+            <li style="margin: 0 0 16px 0; font-size: 1rem; line-height: 1.6">
+                If payment was made via ACH, please provide the date, the name of the bank, and account holder from which payment originated.
+            </li>
+            <li style="margin: 0 0 16px 0; font-size: 1rem; line-height: 1.6">
+                If payment has not been made, please provide an expected payment date for our records.
+            </li>
+            <li style="margin: 0 0 16px 0; font-size: 1rem; line-height: 1.6">
+                If you recently had a conversation with us and have taken action, kindly disregard this message.
+            </li>
+    </ul>
 
-    <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin: 0 auto 24px auto; font-family: Arial, sans-serif; max-width: 600px;">
-        <tr>
-            <td align="center">
-                <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #f9f9f9; border-radius: 8px;">
-                    <tr>
-                        <td style="padding: 16px; width: 33%; vertical-align: top; text-align: center;">
-                            <p style="margin: 0 0 8px 0; font-size: 14px; color: #666666; text-transform: uppercase; letter-spacing: 1px;">Invoice #</p>
-                            <p style="margin: 0; font-size: 16px; color: #333333; font-weight: 600;">{{invoiceNumber}}</p>
-                        </td>
-                        <td style="padding: 16px; width: 33%; vertical-align: top; text-align: center;">
-                            <p style="margin: 0 0 8px 0; font-size: 14px; color: #666666; text-transform: uppercase; letter-spacing: 1px;">Amount</p>
-                            <p style="margin: 0; font-size: 16px; color: #333333; font-weight: 600;">{{formatValue totalAmount}}</p>
-                        </td>
-                        <td style="padding: 16px; width: 33%; vertical-align: top; text-align: center;">
-                            <p style="margin: 0 0 8px 0; font-size: 14px; color: #666666; text-transform: uppercase; letter-spacing: 1px;">Due Date</p>
-                            <p style="margin: 0; font-size: 16px; color: #333333; font-weight: 600;">{{formatDate dueDate}}</p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-
-    <p style="margin: 0 0 16px 0; font-size: 1rem; line-height: 1.6;">
-        If payment has already been made, please provide the payment date, the amount, and the
-        payment delivery method.
-    </p>
-
-    <p style="margin: 0 0 16px 0; font-size: 1rem; line-height: 1.6;">
-        If payment was made via check, please provide the address the check was mailed to.
-    </p>
-
-    <p style="margin: 0 0 16px 0; font-size: 1rem; line-height: 1.6;">
-        If payment was made via ACH, please provide the date, the name of the bank, and account
-        holder from which payment originated.
-    </p>
-
-    <p style="margin: 0 0 16px 0; font-size: 1rem; line-height: 1.6;">
-        If payment has not been made, please provide an expected payment date for our records.
-    </p>
-
-    <p style="margin: 0 0 16px 0; font-size: 1rem; line-height: 1.6;">
-        Thank you in advance for prompt attention to this inquiry.
-    </p>
-
-    <p style="margin: 0 0 16px 0; font-size: 1rem; line-height: 1.6;">
-        Please let us know if anything additional is needed.
-    </p>
       ${signOff}
+`;
+
+const inspyr60DaysOverDue = `
+ <div
+        style="margin-bottom: 12px; background: {{primaryColor}}; border-radius: 8px 8px 0 0; padding: 24px; text-align: center; font-family: Arial, Helvetica, sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td>
+                    <h1 style="color: white; margin: 0; font-size: 1.5rem; font-weight: 600; letter-spacing: 0.025em;">
+                        INVOICES 60+ DAYS OVERDUE</h1>
+                    <p style="color: rgba(255, 255, 255, 0.9); margin: 8px 0 0 0; font-size: 1rem;">{{contactCompanyName}} #{{customerNumber}}
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+         <div style="margin-bottom: 12px; padding: 24px; background-color: white; border-radius: 8px; color: #4b5563; font-family: Arial, Helvetica, sans-serif;">
+        <p style="margin: 0 0 16px 0; font-size: 1rem; font-weight: 500;">AR Team,</p>
+
+        <p style="margin: 0 0 16px 0; font-size: 1rem; line-height: 1.6">
+            The following invoice is over 60 days past due for {{contactCompanyName}}, <span style="font-weight: 600; color: #374151;">Customer #{{customerNumber}}</span>.
+        </p>
+            <p style="margin-bottom: 12px; font-size: 1rem;">
+           All automated outreach has been paused for this invoice. Please escalate and resolve this with the client immediately.
+        </p>
+        
+          <p style="margin: 0; font-size: 1rem;">
+            Thank you,<br>
+            <span style="font-weight: 500;">Automated AR System</span>
+        </p>
+        </div>
 `;
 
 module.exports = {
@@ -208,4 +218,5 @@ module.exports = {
   inspyrDueSoon,
   inspyrOverDue,
   inspyrWeeklyOverDue,
+  inspyr60DaysOverDue,
 };

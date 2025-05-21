@@ -45,7 +45,16 @@ const registerHelpers = () => {
 
   Handlebars.registerHelper("formatDate", function (date) {
     if (!date) return "";
-    return new Date(date).toLocaleDateString();
+
+    const parts = date.split("-");
+
+    if (parts.length !== 3) return date;
+
+    const year = parts[0];
+    const month = parts[1];
+    const day = parts[2];
+
+    return `${month}/${day}/${year}`;
   });
 
   Handlebars.registerHelper("hasServiceDate", function (lineItems) {

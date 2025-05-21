@@ -109,22 +109,14 @@ const emailMessage = `<!DOCTYPE html>
         </div>
 
         <!-- Automated message -->
-        <div
-            style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-family: Arial, Helvetica, sans-serif; font-size: 0.8rem; color: #6b7280; line-height: 1.4; text-align: center;">
-            <p style="margin: 0;">
-                <strong style="color: #4b5563;">This is an automated email. Please do not reply directly to this
-                    message. </strong>
-            </p>
-            <p style="margin: 8px 0 0 0;">
-            If you have questions about a specific Invoice, search for the subject line "<span style="font-style: italic;">Invoice# (Number) &hyphen; Client: {{contactCompanyName}}</span>"
-                <br>in your inbox and reply to our initial invoice email.
-            </p>
-            <p style="margin: 8px 0 0 0;">
-                For urgent matters, contact your AR Specialist at <span
-                    style="color: #2563eb;">{{collectorEmail}}</span>.
-            </p>
-            
-        </div>
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-family: Arial, Helvetica, sans-serif; font-size: 0.8rem; color: #6b7280; line-height: 1.4; text-align: center;">
+          <p style="margin: 0;">
+              <strong style="color: #4b5563;">For questions, comments, or concerns contact your AR Specialist at <span style="color: #2563eb;">{{collectorEmail}}</span>.</strong>
+          </p>
+          <p style="margin: 8px 0 0 0;">
+              Find your original invoice by searching "<span style="font-style: italic;">Invoice #(Number)- Client: {{contactCompanyName}}</span>" in your inbox.
+          </p>
+      </div>
         </div>
         
 </body>
@@ -140,12 +132,12 @@ const data = {
     {
       invoiceNumber: 1001,
       amount: 1880,
-      dueDate: "2025-05-23",
+      dueDate: "2025-05-19",
     },
     {
-      invoiceNumber: 1001,
+      invoiceNumber: 1002,
       amount: 1880,
-      dueDate: "2025-05-23",
+      dueDate: "2025-05-19",
     },
   ],
   primaryColor: "#0277BD",

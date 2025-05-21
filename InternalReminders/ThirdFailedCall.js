@@ -122,15 +122,15 @@ const data = {
     {
       invoiceNumber: 1001,
       amount: 1880,
-      dueDate: "2025-05-23",
+      dueDate: "2025-05-19",
     },
     {
-      invoiceNumber: 1001,
+      invoiceNumber: 1002,
       amount: 1880,
-      dueDate: "2025-05-23",
+      dueDate: "2025-05-19",
     },
   ],
-  primaryColor: "#ff9800",
+  primaryColor: "#0277BD",
 };
 
 const template = Handlebars.compile(emailMessage);

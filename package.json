@@ -6,11 +6,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev:Invoice": "nodemon InvoiceReminders/InvoiceEmail.js --ext js",
     "dev:CallSummary": "nodemon InternalReminders/CallSummary.js --ext js",
-    "dev:WeeklyOverdue": "nodemon ClientReminders/WeeklyOverdue.js --ext js",
     "dev:FirstFailedCall": "nodemon ClientReminders/FirstFailedCall.js --ext js",
     "dev:SecondFailedCall": "nodemon ClientReminders/SecondFailedCall.js --ext js",
     "dev:ThirdFailedCall": "nodemon InternalReminders/ThirdFailedCall.js --ext js",
-    "dev:HighRisk": "nodemon InternalReminders/HighRiskOverdue.js --ext js",
     "dev:PaymentCheck": "nodemon ClientReminders/PaymentCheck.js --ext js",
     "dev:CheckPaused": "nodemon InternalReminders/CheckPausedInvoices.js --ext js"
   },

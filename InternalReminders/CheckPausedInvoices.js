@@ -55,23 +55,28 @@ const emailMessage = `<!DOCTYPE html>
                         style="border-radius: 8px">
                         <!-- Table Header -->
                         <tr style="border-radius: 8px 8px 0 0;">
-                            <td style="background-color: #f9f9f9; padding: 16px; width: 25%; vertical-align: top; text-align: center;">
-                                <p style="margin: 0; font-size: 12px; color: #333333; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
+                            <td style="background-color: #f9f9f9; padding: 12px; width: 18%; vertical-align: top; text-align: center;">
+                                <p style="margin: 0; font-size: 11px; color: #333333; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
                                     Client 
                                 </p>
                             </td>
-                            <td style="background-color: #f9f9f9; padding: 16px; width: 25%; vertical-align: top; text-align: center;">
-                                <p style="margin: 0; font-size: 12px; color: #333333; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
-                                    Customer #
+                            <td style="background-color: #f9f9f9; padding: 12px; width: 18%; vertical-align: top; text-align: center;">
+                                <p style="margin: 0; font-size: 11px; color: #333333; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
+                                    Calls
                                 </p>
                             </td>
-                            <td style="background-color: #f9f9f9; padding: 16px 10px; width: 25%; vertical-align: top; text-align: center;">
-                                <p style="margin: 0; font-size: 12px; color: #333333; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
-                                    Amount Paused
+                            <td style="background-color: #f9f9f9; padding: 12px 10px; width: 18%; vertical-align: top; text-align: center;">
+                                <p style="margin: 0; font-size: 11px; color: #333333; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
+                                    Emails
                                 </p>
                             </td>
-                             <td style="background-color: #f9f9f9; padding: 16px; width: 25%; vertical-align: top; text-align: center;">
-                                <p style="margin: 0; font-size: 12px; color: #333333; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
+                            <td style="background-color: #f9f9f9; padding: 12px 10px; width: 16%; vertical-align: top; text-align: center;">
+                                <p style="margin: 0; font-size: 11px; color: #333333; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
+                                    Fully
+                                </p>
+                            </td>
+                             <td style="background-color: #f9f9f9; padding: 12px; width: 30%; vertical-align: top; text-align: center;">
+                                <p style="margin: 0; font-size: 11px; color: #333333; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
                                     Collector
                                 </p>
                             </td>
@@ -80,22 +85,27 @@ const emailMessage = `<!DOCTYPE html>
                         <!-- Invoice Data Rows -->
                         {{#each clientData}}
                         <tr>
-                            <td style="padding: 16px; width: 25%; vertical-align: top; text-align: center;">
+                            <td style="padding: 10px; width: 18%; vertical-align: top; text-align: center;">
                                 <p style="margin: 0; font-size: 0.9rem; color: #333333; font-weight: 600;">
-                                    {{contactCompanyName}}
+                                     {{customerNumber}}
                                 </p>
                             </td>
-                            <td style="padding: 16px; width: 25%; vertical-align: top; text-align: center;">
-                                <p style="margin: 0; font-size: 0.9rem; color: #333333; font-weight: 600;">
-                                    {{customerNumber}}
-                                </p>
-                            </td>
-                            <td style="padding: 16px; width: 25%; vertical-align: top; text-align: center;">
+                            <td style="padding: 10px; width: 18%; vertical-align: top; text-align: center;">
                                 <p style="margin: 0; font-size: 0.9rem; color: #e74c3c; font-weight: 600;">
                                     {{amountPaused}}
                                 </p>
                             </td>
-                            <td style="padding: 16px; width: 25%; vertical-align: top; text-align: center;">
+                            <td style="padding: 10px; width: 18%; vertical-align: top; text-align: center;">
+                                <p style="margin: 0; font-size: 0.9rem; color: #e74c3c; font-weight: 600;">
+                                    {{amountPaused}}
+                                </p>
+                            </td>
+                            <td style="padding: 10px; width: 16%; vertical-align: top; text-align: center;">
+                                <p style="margin: 0; font-size: 0.9rem; color: #e74c3c; font-weight: 600;">
+                                    {{amountPaused}}
+                                </p>
+                            </td>
+                            <td style="padding: 10px; width: 30%; vertical-align: top; text-align: center;">
                                 <p style="margin: 0; font-size: 0.9rem; color: #333333; font-weight: 600;">
                                     {{collector}}
                                 </p>

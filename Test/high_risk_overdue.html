@@ -1,17 +1,4 @@
-const Handlebars = require("handlebars");
-const { registerHelpers } = require("../HandleBarHelpers");
-const fs = require("node:fs");
-const path = require("node:path");
-const chokidar = require("chokidar");
-
-// activate all helper functions
-registerHelpers();
-
-const subject = `
-Invoice #{{#each invoiceData}}{{invoiceNumber}}{{#unless @last}},{{/unless}}{{/each}}- Client: {{contactCompanyName}}, Past 60 Days Due
-`;
-
-const emailMessage = `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -22,13 +9,13 @@ const emailMessage = `<!DOCTYPE html>
 <body
     style="font-family: Arial, Helvetica, sans-serif; line-height: 1.6; color: #1f2937; max-width: 800px; margin: 0 auto; padding: 40px 20px; background-color: #f9fafb;">
     <div
-        style="margin-bottom: 12px; background: {{primaryColor}}; border-radius: 8px 8px 0 0; padding: 24px; text-align: center; font-family: Arial, Helvetica, sans-serif;">
+        style="margin-bottom: 12px; background: #ff9800; border-radius: 8px 8px 0 0; padding: 24px; text-align: center; font-family: Arial, Helvetica, sans-serif;">
         <table width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr>
                 <td>
                     <h1 style="color: white; margin: 0; font-size: 1.5rem; font-weight: 600; letter-spacing: 0.025em;">
                         INVOICES 60+ DAYS OVERDUE</h1>
-                    <p style="color: rgba(255, 255, 255, 0.9); margin: 8px 0 0 0; font-size: 1rem;">{{contactCompanyName}} #{{customerNumber}}
+                    <p style="color: rgba(255, 255, 255, 0.9); margin: 8px 0 0 0; font-size: 1rem;">Southern Ionics #2189153
                     </p>
                 </td>
             </tr>
@@ -41,7 +28,7 @@ const emailMessage = `<!DOCTYPE html>
         <p style="margin: 0 0 16px 0; font-size: 1rem; font-weight: 500;">AR Team,</p>
 
         <p style="margin: 0 0 16px 0; font-size: 1rem; line-height: 1.6">
-            The following invoices are over 60 days past due for {{contactCompanyName}}, <span style="font-weight: 600; color: #374151;">Customer #{{customerNumber}}:</span>
+            The following invoices are over 60 days past due for Southern Ionics, <span style="font-weight: 600; color: #374151;">Customer #2189153:</span>
         </p>
 
        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="
@@ -73,25 +60,40 @@ const emailMessage = `<!DOCTYPE html>
                         </tr>
                         
                         <!-- Invoice Data Rows -->
-                        {{#each invoiceData}}
                         <tr>
                             <td style="padding: 16px; width: 33%; vertical-align: top; text-align: center;">
                                 <p style="margin: 0; font-size: 16px; color: #333333; font-weight: 600;">
-                                    {{invoiceNumber}}
+                                    1002
                                 </p>
                             </td>
                             <td style="padding: 16px; width: 33%; vertical-align: top; text-align: center;">
                                 <p style="margin: 0; font-size: 16px; color: #333333; font-weight: 600;">
-                                    {{formatValue amount}}
+                                    $1880.00
                                 </p>
                             </td>
                             <td style="padding: 16px; width: 33%; vertical-align: top; text-align: center;">
                                 <p style="margin: 0; font-size: 16px; color: #e74c3c; font-weight: 600;">
-                                    {{formatDate dueDate}}
+                                    05/19/2025
                                 </p>
                             </td>
                         </tr>
-                        {{/each}}
+                        <tr>
+                            <td style="padding: 16px; width: 33%; vertical-align: top; text-align: center;">
+                                <p style="margin: 0; font-size: 16px; color: #333333; font-weight: 600;">
+                                    1002
+                                </p>
+                            </td>
+                            <td style="padding: 16px; width: 33%; vertical-align: top; text-align: center;">
+                                <p style="margin: 0; font-size: 16px; color: #333333; font-weight: 600;">
+                                    $1880.00
+                                </p>
+                            </td>
+                            <td style="padding: 16px; width: 33%; vertical-align: top; text-align: center;">
+                                <p style="margin: 0; font-size: 16px; color: #e74c3c; font-weight: 600;">
+                                    05/19/2025
+                                </p>
+                            </td>
+                        </tr>
                     </table>
                 </td>
             </tr>
@@ -108,69 +110,3 @@ const emailMessage = `<!DOCTYPE html>
         </div>
 </body>
 </html>
-`;
-
-const data = {
-  contactCompanyName: "Southern Ionics",
-  customerNumber: 2189153,
-  contactName: "Kealy Baxter",
-  collector: "Rachel Gonzalez",
-  collectorEmail: "rgonzalez@inspyrsolutions.com",
-  invoiceData: [
-    {
-      invoiceNumber: 1001,
-      amount: 1880,
-      dueDate: "2025-05-23",
-    },
-    {
-      invoiceNumber: 1001,
-      amount: 1880,
-      dueDate: "2025-05-23",
-    },
-  ],
-  primaryColor: "#ff9800",
-};
-
-const template = Handlebars.compile(emailMessage);
-const subjectTemplate = Handlebars.compile(subject);
-
-function generateAndSaveHTML() {
-  try {
-    console.log("Generating HTML...");
-    const html = template(data);
-    console.log("Subject: ", subjectTemplate(data));
-    const outputFile = path.join(__dirname, "high_risk_overdue.html");
-    fs.writeFileSync(outputFile, html);
-    console.log(`HTML generated successfully at: ${outputFile}`);
-  } catch (error) {
-    console.error("Error generating HTML:", error);
-  }
-}
-
-console.log("Setting up file watcher with chokidar...");
-
-// Watch JS files
-const watcher = chokidar.watch(["./InternalReminders/*.js"], {
-  ignored: /(node_modules|\.git)/,
-  persistent: true,
-  ignoreInitial: true,
-  awaitWriteFinish: {
-    stabilityThreshold: 300,
-    pollInterval: 100,
-  },
-});
-
-// Add event listeners
-watcher
-  .on("change", (path) => {
-    console.log(`File ${path} has changed, regenerating HTML...`);
-    generateAndSaveHTML();
-  })
-  .on("error", (error) => console.error(`Watcher error: ${error}`))
-  .on("ready", () =>
-    console.log("Initial scan complete. Ready for changes...")
-  );
-
-// Initial generation
-console.log("Performing initial HTML generation...");
-generateAndSaveHTML();

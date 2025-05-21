@@ -13,6 +13,7 @@ const {
   inspyrDueSoon,
   inspyrOverDue,
   inspyrWeeklyOverDue,
+  inspyr60DaysOverDue,
 } = require("./extras/InspyrOutReachMessages");
 const Handlebars = require("handlebars");
 const fs = require("node:fs");
@@ -41,6 +42,14 @@ const subject = `
 
      {{#if (equals outReachMessage 'inspyrOverDue') }}
        Invoice #{{invoiceNumber}}- Client:{{contactCompanyName}}, Past Due
+    {{/if}}
+
+    {{#if (equals outReachMessage 'inspyrWeeklyOverDue') }}
+       Invoice #{{invoiceNumber}}- Client:{{contactCompanyName}}, Past Due
+    {{/if}}
+
+     {{#if (equals outReachMessage 'inspyr60DaysOverDue') }}
+       Invoice #{{invoiceNumber}}- Client:{{contactCompanyName}}, 60 Days Past Due
     {{/if}}
   `;
 
@@ -93,6 +102,14 @@ const emailMessage = `<!DOCTYPE html>
       ${inspyrOverDue}
     {{/if}}
 
+    {{#if (equals outReachMessage 'inspyrWeeklyOverDue') }}
+      ${inspyrWeeklyOverDue}
+    {{/if}}
+
+     {{#if (equals outReachMessage 'inspyr60DaysOverDue') }}
+      ${inspyr60DaysOverDue}
+    {{/if}}
+
     <div style="background: white; border-radius: 12px; padding: 40px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); position: relative; overflow: hidden;">
        <!-- Company Info -->
         <div style="display: flex; justify-content: space-between; margin-bottom: 40px;">
@@ -120,7 +137,7 @@ const emailMessage = `<!DOCTYPE html>
         <!-- Billing Info -->
         <table cellpadding="0" cellspacing="0" style="width: 100%; margin-bottom: 20px;">
             <tr>
-                <td style="width: 33%; vertical-align: top;">
+                <td style="width: 33%;">
                     <div style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 12px; font-weight: 600;">BILL TO</div>
                     {{#if contactName}}<div style="font-weight: 600; color: #374151;">{{contactName}}</div>{{/if}}
                     {{#if contactCompanyName}} {{#if (notEquals contactCompanyName contactName)}}<div>{{contactCompanyName}}</div>{{/if}} {{/if}}
@@ -128,7 +145,7 @@ const emailMessage = `<!DOCTYPE html>
                     {{#if (and contactBillAddr.city contactBillAddr.state)}}<div>{{contactBillAddr.city}}, {{contactBillAddr.state}} {{#if contactBillAddr.zipCode}}{{contactBillAddr.zipCode}}{{/if}}</div>{{/if}}
                 </td>
                 {{#if contactShipAddr}}
-                  <td style="width: 33%; vertical-align: top;">
+                  <td style="width: 33%;">
                       <div style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 12px; font-weight: 600;">SHIP TO</div>
                       {{#if contactShipAddr.city}}
                         {{#if contactName}}<div style="font-weight: 600; color: #374151;">{{contactName}}</div>{{/if}}
@@ -140,12 +157,12 @@ const emailMessage = `<!DOCTYPE html>
                   {{else}}
                   <td style="width: 33%;"></td>
                 {{/if}} 
-                <td style="width: 33%; vertical-align: top; text-align: left; padding-left: 50px;">
-                    {{#if customerNumber}}<div><span style="font-weight: 600; color: #374151; font-size: 0.95rem;">CUSTOMER#</span> {{customerNumber}}</div>{{/if}}
-                    {{#if invoiceNumber}}<div><span style="font-weight: 600; color: #374151; font-size: 0.95rem;">INVOICE#</span> {{invoiceNumber}}</div>{{/if}}
-                    {{#if transactionDate}}<div><span style="font-weight: 600; color: #374151; font-size: 0.95rem;">DATE&hyphen;</span> {{formatDate transactionDate}}</div>{{/if}}
-                    {{#if dueDate}}<div><span style="font-weight: 600; color: #374151; font-size: 0.95rem;">DUE DATE&hyphen;</span> {{formatDate dueDate}}</div>{{/if}}
-                    {{#if salesTerm}}<div><span style="font-weight: 600; color: #374151; font-size: 0.95rem;">TERMS&hyphen;</span> {{salesTerm}}</div>{{/if}}
+                <td style="width: 33%; text-align: left; padding-left: 45px;">
+                    {{#if customerNumber}}<div><span style="font-weight: 600; color: #374151; font-size: 0.8rem;">CUSTOMER</span> #{{customerNumber}}</div>{{/if}}
+                    {{#if invoiceNumber}}<div><span style="font-weight: 600; color: #374151; font-size: 0.8rem;">INVOICE</span> #{{invoiceNumber}}</div>{{/if}}
+                    {{#if transactionDate}}<div><span style="font-weight: 600; color: #374151; font-size: 0.8rem;">DATE-</span> {{formatDate transactionDate}}</div>{{/if}}
+                    {{#if dueDate}}<div><span style="font-weight: 600; color: #374151; font-size: 0.8rem;">DUE DATE-</span> {{formatDate dueDate}}</div>{{/if}}
+                    {{#if salesTerm}}<div><span style="font-weight: 600; color: #374151; font-size: 0.8rem;">TERMS-</span> {{salesTerm}}</div>{{/if}}
                 </td>
             </tr>
         </table>
@@ -257,18 +274,28 @@ const emailMessage = `<!DOCTYPE html>
         <table cellpadding="0" cellspacing="0" style="width: 100%; margin-top: 30px;">
             <tr>
                 <td style="width: 50%; vertical-align: top;">
-                  <div style="height: 100%; display: flex; flex-direction: column; justify-content: flex-end; gap: 20px;">
-                      {{#if customMessage}} 
-                      <div style="color: #6b7280; font-size: 0.85rem; text-align: left; margin-bottom: 20px">
-                          {{customMessage}}
-                      </div> 
-                      {{/if}}
-                      {{#if fixedCompanyMessage}}
-                      <div style="border: 2px solid {{primaryColor}}; border-radius: 8px; padding: 25px; color: #4b5563; font-size: 0.85rem; text-align: left; line-height: 1.8; ">
-                          {{{fixedCompanyMessage}}}
-                      </div>
-                      {{/if}}
-                  </div>
+                 <table cellpadding="0" cellspacing="0" style="width: 100%;">
+                    <tr>
+                        <td style="width: 50%; vertical-align: top;">
+                            <table cellpadding="0" cellspacing="0"">
+                                {{#if customMessage}}
+                                <tr>
+                                    <td style="color: #6b7280; font-size: 0.85rem; text-align: left; padding-bottom: 20px;">
+                                        {{customMessage}}
+                                    </td>
+                                </tr>
+                                {{/if}}
+                                {{#if fixedCompanyMessage}}
+                                <tr>
+                                    <td style="border: 2px solid {{primaryColor}}; border-radius: 8px; padding: 25px; color: #4b5563; font-size: 0.85rem; text-align: left; line-height: 1.8;">
+                                        {{{fixedCompanyMessage}}}
+                                    </td>
+                                </tr>
+                                {{/if}}
+                            </table>
+                        </td>
+                    </tr>
+                </table>
               </td>
             
                 <td style="width: 50%; vertical-align: top;">
@@ -372,28 +399,26 @@ const emailMessage = `<!DOCTYPE html>
           {{/if}}
         {{/if}}
         
+        {{#if (and (notEquals outReachMessage 'inspyrInitialMessage') (notEquals outReachMessage 'inspyr60DaysOverDue')) }}
         <!-- Automated message -->
         <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-family: Arial, Helvetica, sans-serif; font-size: 0.8rem; color: #6b7280; line-height: 1.4; text-align: center;">
           <p style="margin: 0;">
-              <strong style="color: #4b5563;">This is an automated email. Please do not reply directly to this message. </strong>
+              <strong style="color: #4b5563;">For questions, comments, or concerns contact your AR Specialist at <span style="color: #2563eb;">{{collectorEmail}}</span>.</strong>
           </p>
           <p style="margin: 8px 0 0 0;">
-              To send a response, search for the subject line "<span style="font-style: italic;">Invoice #{{invoiceNumber}} &hyphen; Client: {{contactCompanyName}}</span>" 
-              <br>in your inbox and reply to our initial invoice email.
-          </p>
-          <p style="margin: 8px 0 0 0;">
-              For urgent matters, contact your AR Specialist at <span style="color: #2563eb;">{{collectorEmail}}</span>.
+              Search "<span style="font-style: italic;">Invoice #{{invoiceNumber}}- Client: {{contactCompanyName}}</span>" in your inbox to find the original invoice sent.
           </p>
       </div>
+      {{/if}}
     </div>
 </body>
 </html>`;
 
 const data = {
-  outReachMessage: "inspyrOverDue",
+  outReachMessage: "inspyr60DaysOverDue",
   invoiceNumber: 1049438,
-  transactionDate: "2024-04-24",
-  dueDate: "2025-05-24",
+  transactionDate: "2024-04-20",
+  dueDate: "2025-05-20",
   customerNumber: 2189153,
   collector: "Rachel Gonzalez",
   collectorEmail: "rgonzalez@inspyrsolutions.com",
@@ -429,7 +454,7 @@ const data = {
   shippingAmount: 0,
   amountPaid: 0,
   balanceDue: 1880,
-  customMessage: "Thank you for your business and have a great day! ",
+  customMessage: "Thank you for your business and have a great day!",
   ourCompanyName: "INSPYR Solutions, LLC",
   ourCompanyAddr: {
     streetAddress: "P.O. Box 737249",
