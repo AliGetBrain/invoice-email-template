@@ -186,7 +186,7 @@ const inspyr60DaysOverDue = `
             <tr>
                 <td>
                     <h1 style="color: white; margin: 0; font-size: 1.5rem; font-weight: 600; letter-spacing: 0.025em;">
-                        INVOICES 60+ DAYS OVERDUE</h1>
+                        INVOICE 60+ DAYS OVERDUE</h1>
                     <p style="color: rgba(255, 255, 255, 0.9); margin: 8px 0 0 0; font-size: 1rem;">{{contactCompanyName}} #{{customerNumber}}
                     </p>
                 </td>

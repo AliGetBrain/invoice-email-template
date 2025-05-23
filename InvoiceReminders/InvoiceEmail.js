@@ -25,31 +25,31 @@ registerHelpers();
 
 const subject = `
     {{#if (equals outReachMessage 'inspyrInitialMessage') }}
-      Invoice #{{invoiceNumber}}- Client:{{contactCompanyName}}
+      Invoice #{{invoiceNumber}}- Client: {{contactCompanyName}}
     {{/if}}
 
      {{#if (equals outReachMessage 'inspyrTwoWeeksNewClient') }}
-       Invoice #{{invoiceNumber}}- Client:{{contactCompanyName}}, Follow Up
+       Invoice #{{invoiceNumber}}- Client: {{contactCompanyName}}, Follow Up
     {{/if}}
 
      {{#if (equals outReachMessage 'inspyrTwoWeeksEstablishedClient') }}
-       Invoice #{{invoiceNumber}}- Client:{{contactCompanyName}}, Follow Up
+       Invoice #{{invoiceNumber}}- Client: {{contactCompanyName}}, Follow Up
     {{/if}}
 
     {{#if (equals outReachMessage 'inspyrDueSoon') }}
-      Invoice #{{invoiceNumber}}- Client:{{contactCompanyName}}, Due Soon
+      Invoice #{{invoiceNumber}}- Client: {{contactCompanyName}}, Due Soon
     {{/if}}
 
      {{#if (equals outReachMessage 'inspyrOverDue') }}
-       Invoice #{{invoiceNumber}}- Client:{{contactCompanyName}}, Past Due
+       Invoice #{{invoiceNumber}}- Client: {{contactCompanyName}}, Past Due
     {{/if}}
 
     {{#if (equals outReachMessage 'inspyrWeeklyOverDue') }}
-       Invoice #{{invoiceNumber}}- Client:{{contactCompanyName}}, Past Due
+       Invoice #{{invoiceNumber}}- Client: {{contactCompanyName}}, Past Due
     {{/if}}
 
      {{#if (equals outReachMessage 'inspyr60DaysOverDue') }}
-       Invoice #{{invoiceNumber}}- Client:{{contactCompanyName}}, 60 Days Past Due
+       Invoice #{{invoiceNumber}}- Client: {{contactCompanyName}}, 60 Days Past Due
     {{/if}}
   `;
 

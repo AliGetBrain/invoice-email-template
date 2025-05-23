@@ -91,18 +91,18 @@ const emailMessage = `<!DOCTYPE html>
                                 </p>
                             </td>
                             <td style="padding: 10px; width: 18%; vertical-align: top; text-align: center;">
-                                <p style="margin: 0; font-size: 0.9rem; color: #e74c3c; font-weight: 600;">
-                                    {{amountPaused}}
+                                <p style="margin: 0; font-size: 0.9rem; {{#if amountCallsPaused }} color: #e74c3c; {{else}} color: #333333; {{/if}} font-weight: 600;">
+                                    {{#if amountCallsPaused }} {{amountCallsPaused}} {{else}} 0 {{/if}}
                                 </p>
                             </td>
                             <td style="padding: 10px; width: 18%; vertical-align: top; text-align: center;">
-                                <p style="margin: 0; font-size: 0.9rem; color: #e74c3c; font-weight: 600;">
-                                    {{amountPaused}}
+                                <p style="margin: 0; font-size: 0.9rem; {{#if amountEmailsPaused }} color: #e74c3c; {{else}} color: #333333; {{/if}} font-weight: 600;">
+                                    {{#if amountEmailsPaused }} {{amountEmailsPaused}} {{else}} 0 {{/if}}
                                 </p>
                             </td>
                             <td style="padding: 10px; width: 16%; vertical-align: top; text-align: center;">
-                                <p style="margin: 0; font-size: 0.9rem; color: #e74c3c; font-weight: 600;">
-                                    {{amountPaused}}
+                                <p style="margin: 0; font-size: 0.9rem; {{#if amountFullyPaused }} color: #e74c3c; {{else}} color: #333333; {{/if}} font-weight: 600;">
+                                    {{#if amountFullyPaused }} {{amountFullyPaused}} {{else}} 0 {{/if}}
                                 </p>
                             </td>
                             <td style="padding: 10px; width: 30%; vertical-align: top; text-align: center;">
@@ -135,13 +135,17 @@ const data = {
     {
       contactCompanyName: "Southern Ionics",
       customerNumber: 2189153,
-      amountPaused: 4,
+      amountCallsPaused: 1,
+      amountEmailsPaused: 0,
+      amountFullyPaused: 0,
       collector: "Rachel Gonzales",
     },
     {
       contactCompanyName: "Southern Ionics",
       customerNumber: 2189153,
-      amountPaused: 4,
+      amountCallsPaused: 4,
+      amountEmailsPaused: 4,
+      amountFullyPaused: 4,
       collector: "Rachel Gonzales",
     },
   ],
